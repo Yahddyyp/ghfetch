@@ -11,42 +11,47 @@ struct UserInfo {
     avater_url: String,
     created_at: String,
     public_repos: u64,
-    twitter_user: String,
-    company: String,
-    location: String,
+    twitter_user: Option<String>,
+    company: Option<String>,
+    location: Option<String>,
     id: i64,
-    bio: String,
-    blog: String,
-    total_stars: u32,
+    bio: Option<String>,
+    blog: Option<String>,
 }
 
-/// Sum up all the stars of the public repos
-async fn get_total_stars(octocrab: &octocrab::Octocrab, username: &str) -> octocrab::Result<u32> {
-    let mut current_page = octocrab
-        .users(username)
-        .repos()
-        .per_page(100)
-        .send()
-        .await?;
+/// Print the user info clearly
+fn print_user_info(info: &UserInfo) {
+    println!("{}", info.name);
+    println!("{}", "─".repeat(info.name.len()));
+    println!("{:<12} {}", "ID", info.id);
+    println!("{:<12} {}", "Followers", info.followers);
+    println!("{:<12} {}", "Repos", info.public_repos);
+    println!("{:<12} {}", "Joined", info.created_at);
 
-    let mut all_repos = current_page.take_items();
-
-    while let Ok(Some(mut next_page)) = octocrab.get_page(&current_page.next).await {
-        all_repos.extend(next_page.take_items());
-        current_page = next_page;
+    if let Some(company) = &info.company {
+        println!("{:<12} {}", "Company", company)
     }
 
-    let total_stars: u32 = all_repos
-        .iter()
-        .map(|r| r.stargazers_count.unwrap_or(0))
-        .sum();
+    if let Some(location) = &info.location {
+        println!("{:<12} {}", "Location", location)
+    }
 
-    Ok(total_stars)
+    if let Some(twitter) = &info.twitter_user {
+        println!("{:<12} {}", "Twitter", twitter)
+    }
+
+    if let Some(blog) = &info.blog {
+        println!("{:<12} {}", "Blog", blog)
+    }
+
+    if let Some(bio) = &info.bio {
+        println!("\n{}", bio);
+    }
 }
 
 /// Build the client instance and get the info
 async fn get_user_info(
-    args: &Vec<String>,
+    args: &[String],
     username: &str,
     octocrab: &Octocrab,
 ) -> Result<UserProfile, Box<dyn std::error::Error>> {
@@ -89,31 +94,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build the client instance
     let octocrab = octocrab::Octocrab::builder().build()?;
 
-    let user = get_user_info(&args, &username, &octocrab).await?;
-
-    let total_stars_var = get_total_stars(&octocrab, &username).await?;
+    let user = get_user_info(&args, username, &octocrab).await?;
 
     let user_info = UserInfo {
         name: user.login,
-        followers: user.followers.try_into()?,
-        total_stars: total_stars_var,
-        created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
-        public_repos: user.public_repos,
-        blog: user.blog.unwrap_or_else(|| "NOT_FOUND".to_string()),
-        twitter_user: user
-            .twitter_username
-            .unwrap_or_else(|| "NOT_FOUND".to_string()),
-        company: user.company.unwrap_or_else(|| "Unemployed".to_string()),
-        location: user.location.unwrap_or("No where".to_string()),
         id: user.id.0.try_into()?,
-        avater_url: user.avatar_url.to_string(),
+        followers: user.followers.try_into()?,
+        public_repos: user.public_repos,
+        created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
+
         bio: user
             .bio
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" "))
-            .unwrap_or_else(|| "NOT_FOUND".to_string()),
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
+        company: user
+            .company
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
+        location: user
+            .location
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
+        blog: user
+            .blog
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
+        twitter_user: user
+            .twitter_username
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
+        avater_url: user.avatar_url.to_string(),
     };
 
-    println!("{user_info:#?}");
+    print_user_info(&user_info);
 
     Ok(())
 }

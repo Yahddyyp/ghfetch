@@ -5,9 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.104"
-crossterm = "0.29.0"
 octocrab = "0.54.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-ratatui = "0.30.2"
-chrono = "0.4.45"
 reqwest = "0.13.5"
+crossterm = "0.29.0"
