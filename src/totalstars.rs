@@ -12,7 +12,7 @@ pub async fn get_total_stars(
 
     let mut all_repos = current_page.take_items();
 
-    while let Ok(Some(mut next_page)) = octocrab.get_page(&current_page.next).await {
+    while let Some(mut next_page) = octocrab.get_page(&current_page.next).await? {
         all_repos.extend(next_page.take_items());
         current_page = next_page;
     }

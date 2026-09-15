@@ -112,9 +112,17 @@ async fn get_user_info(
             std::process::exit(1);
         }
 
+        // API rate limit exceeded
+        Err(octocrab::Error::GitHub { source, .. })
+            if source.status_code == reqwest::StatusCode::FORBIDDEN =>
+        {
+            eprintln!("GitHub API rate limit exceeded.");
+            std::process::exit(1);
+        }
+
         // IDK what happened
         Err(e) => {
-            eprintln!("Unexpected error: {}", e);
+            eprintln!("Unexpected error: {:#?}", e);
             std::process::exit(1);
         }
     }
