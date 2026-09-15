@@ -108,15 +108,17 @@ async fn get_user_info(
         Err(octocrab::Error::GitHub { source, .. })
             if source.status_code == reqwest::StatusCode::NOT_FOUND =>
         {
-            eprintln!("user '{}' not found.", username);
+            eprintln!("user '{}' not found", username);
             std::process::exit(1);
         }
 
         // API rate limit exceeded
         Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::FORBIDDEN =>
+            if source.status_code == reqwest::StatusCode::FORBIDDEN
+                && source.message.to_lowercase().contains("rate limit") =>
         {
-            eprintln!("GitHub API rate limit exceeded.");
+            eprintln!("GitHub API rate limit exceeded");
+            eprintln!("Try again later");
             std::process::exit(1);
         }
 
