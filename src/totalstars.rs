@@ -1,5 +1,8 @@
 /// Sum up all the stars of the public repos
-async fn get_total_stars(octocrab: &octocrab::Octocrab, username: &str) -> octocrab::Result<u32> {
+pub async fn get_total_stars(
+    octocrab: &octocrab::Octocrab,
+    username: &str,
+) -> octocrab::Result<u32> {
     let mut current_page = octocrab
         .users(username)
         .repos()

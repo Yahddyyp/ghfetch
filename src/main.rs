@@ -1,7 +1,11 @@
 use std::env;
 
+use crate::totalstars::get_total_stars;
 use anyhow::Result;
 use octocrab::{Octocrab, models::UserProfile};
+use owo_colors::OwoColorize;
+
+mod totalstars;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -17,31 +21,61 @@ struct UserInfo {
     id: i64,
     bio: Option<String>,
     blog: Option<String>,
+    total_stars: u32,
 }
 
-/// Print the user info clearly
+/// Print the user info
 fn print_user_info(info: &UserInfo) {
-    println!("{}", info.name);
+    println!("{}", info.name.bold().truecolor(203, 166, 247));
     println!("{}", "─".repeat(info.name.len()));
-    println!("{:<12} {}", "ID", info.id);
-    println!("{:<12} {}", "Followers", info.followers);
-    println!("{:<12} {}", "Repos", info.public_repos);
-    println!("{:<12} {}", "Joined", info.created_at);
+    println!("{:<12} {}", "ID".bold().truecolor(137, 220, 236), info.id);
+    println!(
+        "{:<12} {}",
+        "Total Stars".bold().truecolor(166, 227, 161),
+        info.total_stars
+    );
+    println!(
+        "{:<12} {}",
+        "Followers".bold().truecolor(250, 179, 125),
+        info.followers
+    );
+    println!(
+        "{:<12} {}",
+        "Repos".bold().truecolor(116, 227, 161),
+        info.public_repos
+    );
+    println!(
+        "{:<12} {}",
+        "Joined".bold().truecolor(137, 220, 235),
+        info.created_at
+    );
 
     if let Some(company) = &info.company {
-        println!("{:<12} {}", "Company", company)
+        println!(
+            "{:<12} {}",
+            "Company".bold().truecolor(250, 179, 125),
+            company
+        )
     }
 
     if let Some(location) = &info.location {
-        println!("{:<12} {}", "Location", location)
+        println!(
+            "{:<12} {}",
+            "Location".bold().truecolor(137, 220, 235),
+            location
+        )
     }
 
     if let Some(twitter) = &info.twitter_user {
-        println!("{:<12} {}", "Twitter", twitter)
+        println!(
+            "{:<12} @{}",
+            "Twitter".bold().truecolor(203, 166, 247),
+            twitter
+        )
     }
 
     if let Some(blog) = &info.blog {
-        println!("{:<12} {}", "Blog", blog)
+        println!("{:<12} {}", "Blog".bold().truecolor(203, 166, 247), blog)
     }
 
     if let Some(bio) = &info.bio {
@@ -94,11 +128,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build the client instance
     let octocrab = octocrab::Octocrab::builder().build()?;
 
-    let user = get_user_info(&args, username, &octocrab).await?;
+    let (user_result, stars_result) = tokio::join!(
+        get_user_info(&args, username, &octocrab),
+        get_total_stars(&octocrab, username)
+    );
+
+    let user = user_result?;
+    let total_stars = stars_result?;
 
     let user_info = UserInfo {
         name: user.login,
         id: user.id.0.try_into()?,
+        total_stars: total_stars,
         followers: user.followers.try_into()?,
         public_repos: user.public_repos,
         created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
