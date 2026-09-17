@@ -1,150 +1,43 @@
-use std::env;
-
+use crate::display_info::print_user_info;
+use crate::get_avatar_image::download_avatar;
 use crate::totalstars::get_total_stars;
+use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
-use octocrab::{Octocrab, models::UserProfile};
-use owo_colors::OwoColorize;
+use std::env;
+use std::num::NonZeroU32;
 
+mod display_info;
+mod get_avatar_image;
 mod totalstars;
+mod user_info;
 
-#[allow(dead_code)]
-#[derive(Debug)]
-struct UserInfo {
-    name: String,
-    followers: i32,
-    avater_url: String,
-    created_at: String,
-    public_repos: u64,
-    twitter_user: Option<String>,
-    company: Option<String>,
-    location: Option<String>,
-    id: i64,
-    bio: Option<String>,
-    blog: Option<String>,
-    total_stars: u32,
-}
+fn print_avatar(path: &str) {
+    let conf = viuer::Config {
+        width: Some(20),
+        height: Some(10),
+        ..Default::default()
+    };
 
-/// Print the user info
-fn print_user_info(info: &UserInfo) {
-    println!("{}", info.name.bold().truecolor(203, 166, 247));
-    println!("{}", "─".repeat(info.name.len()));
-    println!("{:<12} {}", "ID".bold().truecolor(137, 220, 236), info.id);
-    println!(
-        "{:<12} {}",
-        "Total Stars".bold().truecolor(166, 227, 161),
-        info.total_stars
-    );
-    println!(
-        "{:<12} {}",
-        "Followers".bold().truecolor(250, 179, 125),
-        info.followers
-    );
-    println!(
-        "{:<12} {}",
-        "Repos".bold().truecolor(116, 227, 161),
-        info.public_repos
-    );
-    println!(
-        "{:<12} {}",
-        "Joined".bold().truecolor(137, 220, 235),
-        info.created_at
-    );
-
-    if let Some(company) = &info.company {
-        println!(
-            "{:<12} {}",
-            "Company".bold().truecolor(250, 179, 125),
-            company
-        )
-    }
-
-    if let Some(location) = &info.location {
-        println!(
-            "{:<12} {}",
-            "Location".bold().truecolor(137, 220, 235),
-            location
-        )
-    }
-
-    if let Some(twitter) = &info.twitter_user {
-        println!(
-            "{:<12} @{}",
-            "Twitter".bold().truecolor(203, 166, 247),
-            twitter
-        )
-    }
-
-    if let Some(blog) = &info.blog {
-        println!("{:<12} {}", "Blog".bold().truecolor(203, 166, 247), blog)
-    }
-
-    if let Some(bio) = &info.bio {
-        println!("\n{}", bio);
+    if viuer::print_from_file(path, &conf).is_err() {
+        print_ascii_avatar(path);
     }
 }
 
-/// Build the client instance and get the info
-async fn get_user_info(
-    args: &[String],
-    username: &str,
-    octocrab: &Octocrab,
-) -> Result<UserProfile, Box<dyn std::error::Error>> {
-    if args.len() >= 3 {
-        eprintln!("Cannot take more than two arguments");
-        std::process::exit(1);
-    }
-
-    // Check if PAT actually works
-    match octocrab.current().user().await {
-        Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::UNAUTHORIZED =>
-        {
-            eprintln!("GHFETCH_TOKEN is invalid or expired");
-            std::process::exit(1);
+fn print_ascii_avatar(path: &str) {
+    let img = match image::open(path) {
+        Ok(img) => img,
+        Err(_) => {
+            println!("[could not load avatar]");
+            return;
         }
+    };
 
-        Err(e) => {
-            eprintln!("Failed to validate GHFETCH_TOKEN: {e:#?}");
-            std::process::exit(1);
-        }
+    let config = artem::config::ConfigBuilder::new()
+        .target_size(NonZeroU32::new(30).unwrap())
+        .build();
 
-        Ok(_) => println!("TOKEN is being used"),
-    }
-
-    match octocrab.users(username).profile().await {
-        // If user actually exists
-        Ok(user) => Ok(user),
-
-        // No wifi
-        Err(octocrab::Error::Service { source, .. }) if source.to_string().contains("Connect") => {
-            eprintln!("No wifi");
-            std::process::exit(1);
-        }
-
-        // User was not found
-        Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::NOT_FOUND =>
-        {
-            eprintln!("user '{}' not found", username);
-            std::process::exit(1);
-        }
-
-        // API rate limit exceeded
-        Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::FORBIDDEN
-                && source.message.to_lowercase().contains("rate limit") =>
-        {
-            eprintln!("GitHub API rate limit exceeded");
-            eprintln!("Try again later");
-            std::process::exit(1);
-        }
-
-        // IDK what happened
-        Err(e) => {
-            eprintln!("Unexpected error: {:#?}", e);
-            std::process::exit(1);
-        }
-    }
+    let ascii = artem::convert(img, &config);
+    println!("{}", ascii);
 }
 
 #[tokio::main]
@@ -152,19 +45,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let username = args.get(1).ok_or("no username provided")?;
     let token = env::var("GHFETCH_TOKEN");
+    let has_token = token.is_ok();
 
     // If pat token is avalible use that or else use unauthorized
     // requests to build the client instance
-    let octocrab = match token {
+    let octocrab = match &token {
         Ok(token) => octocrab::Octocrab::builder()
-            .personal_token(token)
+            .personal_token(token.clone())
             .build()?,
 
         Err(_) => octocrab::Octocrab::builder().build()?,
     };
 
     let (user_result, stars_result) = tokio::join!(
-        get_user_info(&args, username, &octocrab),
+        get_user_info(&args, username, &octocrab, has_token),
         get_total_stars(&octocrab, username)
     );
 
@@ -199,8 +93,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .twitter_username
             .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
 
-        avater_url: user.avatar_url.to_string(),
+        avatar_url: user.avatar_url.to_string(),
     };
+    let avater_path = download_avatar(&user_info.avatar_url).await?;
+    print_avatar(&avater_path);
 
     print_user_info(&user_info);
 

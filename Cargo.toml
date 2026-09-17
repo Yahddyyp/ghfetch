@@ -7,6 +7,10 @@ edition = "2024"
 anyhow = "1.0.104"
 octocrab = "0.54.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-reqwest = "0.13.5"
+reqwest = { version = "0.12", features = ["stream"] }
+image = "0.24"
 crossterm = "0.29.0"
 owo-colors = "4.4.0"
+futures-util = "0.3"
+viuer = { version = "0.9", features = ["print-file"] }
+artem = "2"
