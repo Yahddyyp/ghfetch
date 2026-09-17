@@ -94,13 +94,21 @@ async fn get_user_info(
         std::process::exit(1);
     }
 
-    // Check if PAT is actually correct
+    // Check if PAT actually works
     match octocrab.current().user().await {
-        Err(octocrab::Error::GitHub { .. }) => {
-            eprintln!("GHFETCH_TOKEN is not valid");
+        Err(octocrab::Error::GitHub { source, .. })
+            if source.status_code == reqwest::StatusCode::UNAUTHORIZED =>
+        {
+            eprintln!("GHFETCH_TOKEN is invalid or expired");
             std::process::exit(1);
         }
-        _ => (),
+
+        Err(e) => {
+            eprintln!("Failed to validate GHFETCH_TOKEN: {e:#?}");
+            std::process::exit(1);
+        }
+
+        Ok(_) => println!("TOKEN is being used"),
     }
 
     match octocrab.users(username).profile().await {
