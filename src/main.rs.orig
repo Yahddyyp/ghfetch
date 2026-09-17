@@ -94,6 +94,8 @@ async fn get_user_info(
         std::process::exit(1);
     }
 
+<<<<<<< Updated upstream
+=======
     // Check if PAT is actually correct
     match octocrab.current().user().await {
         Err(octocrab::Error::GitHub { .. }) => {
@@ -103,6 +105,7 @@ async fn get_user_info(
         _ => (),
     }
 
+>>>>>>> Stashed changes
     match octocrab.users(username).profile().await {
         // If user actually exists
         Ok(user) => Ok(user),
@@ -145,15 +148,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let username = args.get(1).ok_or("no username provided")?;
     let token = env::var("GHFETCH_TOKEN");
 
-    // If pat token is avalible use that or else use unauthorized
-    // requests to build the client instance
-    let octocrab = match token {
-        Ok(token) => octocrab::Octocrab::builder()
-            .personal_token(token)
-            .build()?,
-
-        Err(_) => octocrab::Octocrab::builder().build()?,
-    };
+    // Build the client instance
+    let octocrab = octocrab::Octocrab::builder().build()?;
 
     let (user_result, stars_result) = tokio::join!(
         get_user_info(&args, username, &octocrab),
