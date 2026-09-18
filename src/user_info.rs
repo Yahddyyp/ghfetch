@@ -1,6 +1,5 @@
 use octocrab::{Octocrab, models::UserProfile};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct UserInfo {
     pub name: String,

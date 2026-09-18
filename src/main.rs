@@ -1,44 +1,14 @@
 use crate::display_info::print_user_info;
-use crate::get_avatar_image::download_avatar;
+use crate::get_avatar_image::{download_avatar, print_avatar};
 use crate::totalstars::get_total_stars;
 use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
 use std::env;
-use std::num::NonZeroU32;
 
 mod display_info;
 mod get_avatar_image;
 mod totalstars;
 mod user_info;
-
-fn print_avatar(path: &str) {
-    let conf = viuer::Config {
-        width: Some(20),
-        height: Some(10),
-        ..Default::default()
-    };
-
-    if viuer::print_from_file(path, &conf).is_err() {
-        print_ascii_avatar(path);
-    }
-}
-
-fn print_ascii_avatar(path: &str) {
-    let img = match image::open(path) {
-        Ok(img) => img,
-        Err(_) => {
-            println!("[could not load avatar]");
-            return;
-        }
-    };
-
-    let config = artem::config::ConfigBuilder::new()
-        .target_size(NonZeroU32::new(30).unwrap())
-        .build();
-
-    let ascii = artem::convert(img, &config);
-    println!("{}", ascii);
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -48,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let has_token = token.is_ok();
 
     // If pat token is avalible use that or else use unauthorized
-    // requests to build the client instance
+    // requests and build the client instance
     let octocrab = match &token {
         Ok(token) => octocrab::Octocrab::builder()
             .personal_token(token.clone())
@@ -93,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .twitter_username
             .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
 
-        avatar_url: user.avatar_url.to_string(),
+        avatar_url: format!("{}&s=200", user.avatar_url),
     };
     let avater_path = download_avatar(&user_info.avatar_url).await?;
     print_avatar(&avater_path);
