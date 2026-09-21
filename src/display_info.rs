@@ -90,13 +90,12 @@ pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layou
                     .map(|bl| format!("{:<12} {}", "Blog".bold().truecolor(r, g, b), bl))
             }
 
+            Field::Break => Some(String::new()),
+
             Field::Bio => info.bio.as_ref().map(|b| b.to_string()),
         };
 
         if let Some(line) = line {
-            if *field == Field::Bio {
-                lines.push(String::new());
-            }
             lines.push(line);
         }
     }

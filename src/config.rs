@@ -71,6 +71,7 @@ pub enum Field {
     Twitter,
     Blog,
     Bio,
+    Break,
 }
 
 #[derive(Deserialize, Clone, Copy)]
@@ -152,8 +153,7 @@ fn write_default_config(path: &std::path::Path) {
         let _ = std::fs::create_dir_all(parent);
     }
 
-    let default_contents = r#"[layout]
-fields = [
+    let default_contents = r#"fields = [
     "id",
     "total_stars",
     "followers",
@@ -163,6 +163,7 @@ fields = [
     "location",
     "twitter",
     "blog",
+    "break",
     "bio",
 ]
 
