@@ -9,8 +9,8 @@ const KITTY_CHUNK_SIZE: usize = 4096;
 pub const IMAGE_COLUMNS: usize = 24;
 pub const IMAGE_ROWS: usize = 12;
 
-/// Take the url, download the image, stream the image, base64 encodes it
-/// then send it to the terminal.
+/// Take the url, download the image, cache the image in mermory and covert it to png,
+/// base64 encodes it then send it to the terminal.
 pub async fn get_image(url: &str, image_id: u32) -> Result<()> {
     let response = reqwest::get(url).await?.error_for_status()?;
 
@@ -31,7 +31,8 @@ pub async fn get_image(url: &str, image_id: u32) -> Result<()> {
     // terminal
     let mut encoded_buffer: Vec<u8> = encoded.into_bytes();
 
-    // Kitty image protocol expects a=T at first transmission
+    // Kitty's protocol needs a=t on every chunk, but f=100 only on
+    // the first one, this tracks whether we're still on that chunk
     let mut first = true;
 
     // Check if there is enough for kitty's image protocol
