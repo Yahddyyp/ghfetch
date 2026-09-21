@@ -1,4 +1,4 @@
-use crate::config::{Colors, Image, load_config};
+use crate::config_stuff::{Colors, Image, load_config};
 use crate::display_info::print_user_info;
 use crate::get_avatar_image::get_image;
 use crate::totalstars::get_total_stars;
@@ -6,7 +6,7 @@ use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
 use std::env;
 
-mod config;
+mod config_stuff;
 mod display_info;
 mod errors;
 mod get_avatar_image;

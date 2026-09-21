@@ -1,5 +1,5 @@
 use crate::{
-    config::{Colors, Field, Image, UnderlineField, UnderlineTarget},
+    config_stuff::{Colors, Field, Image, UnderlineField, UnderlineTarget},
     user_info::UserInfo,
 };
 use owo_colors::OwoColorize;

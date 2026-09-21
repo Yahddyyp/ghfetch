@@ -1,4 +1,4 @@
-use crate::config::Image;
+use crate::config_stuff::Image;
 use anyhow::Result;
 use base64::Engine;
 use std::io::{self, Write};
