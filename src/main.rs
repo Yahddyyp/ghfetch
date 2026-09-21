@@ -1,11 +1,12 @@
 use crate::display_info::print_user_info;
-use crate::get_avatar_image::{download_avatar, print_avatar};
+use crate::get_avatar_image::get_image;
 use crate::totalstars::get_total_stars;
 use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
 use std::env;
 
 mod display_info;
+mod errors;
 mod get_avatar_image;
 mod totalstars;
 mod user_info;
@@ -16,6 +17,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let username = args.get(1).ok_or("no username provided")?;
     let token = env::var("GHFETCH_TOKEN");
     let has_token = token.is_ok();
+    // ID of the image from the process id given by the os
+    let image_id = std::process::id();
 
     // If pat token is avalible use that or else use unauthorized
     // requests and build the client instance
@@ -33,12 +36,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let user = user_result?;
-    let total_stars = stars_result?;
+    let total_stars = stars_result;
 
     let user_info = UserInfo {
         name: user.login,
         id: user.id.0.try_into()?,
-        total_stars: total_stars,
+        total_stars,
         followers: user.followers.try_into()?,
         public_repos: user.public_repos,
         created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
@@ -65,8 +68,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         avatar_url: format!("{}&s=200", user.avatar_url),
     };
-    let avater_path = download_avatar(&user_info.avatar_url).await?;
-    print_avatar(&avater_path);
+
+    get_image(&user_info.avatar_url, image_id).await?;
 
     print_user_info(&user_info);
 
