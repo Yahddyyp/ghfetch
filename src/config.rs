@@ -14,6 +14,7 @@ impl Config {
     pub fn fields(&self) -> Vec<Field> {
         self.fields.clone().unwrap_or_else(|| {
             vec![
+                Field::User,
                 Field::Id,
                 Field::TotalStars,
                 Field::Followers,
@@ -29,7 +30,7 @@ impl Config {
     }
 }
 
-// Raw, optional values as read from the TOML file
+// Raw, optional values as read from the config file
 #[derive(Deserialize, Default)]
 pub struct ImageConfig {
     // Size of the image
@@ -58,9 +59,34 @@ impl Image {
     }
 }
 
-#[derive(Deserialize, PartialEq, Eq, Clone, Copy)]
+#[derive(Deserialize, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum UnderlineField {
+    User,
+    Id,
+    TotalStars,
+    Followers,
+    Repos,
+    Joined,
+    Company,
+    Location,
+    Twitter,
+    Blog,
+    Bio,
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(untagged)]
+pub enum UnderlineTarget {
+    Field(UnderlineField),
+    Width(usize),
+}
+
+#[derive(Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum Field {
+    User,
+    Underline(UnderlineTarget),
     Id,
     TotalStars,
     Followers,
@@ -132,6 +158,7 @@ impl Colors {
     }
 }
 
+/// Load the config from file.
 pub fn load_config() -> Config {
     let path = match dirs::home_dir() {
         Some(home) => home.join(".config").join("ghfetch").join("config.toml"),
@@ -148,12 +175,15 @@ pub fn load_config() -> Config {
     }
 }
 
+/// Write the default config.
 fn write_default_config(path: &std::path::Path) {
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }
 
     let default_contents = r#"fields = [
+    "user",
+    { underline = "user" },
     "id",
     "total_stars",
     "followers",

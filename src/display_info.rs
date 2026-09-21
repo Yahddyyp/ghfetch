@@ -1,5 +1,5 @@
 use crate::{
-    config::{Colors, Field, Image},
+    config::{Colors, Field, Image, UnderlineField, UnderlineTarget},
     user_info::UserInfo,
 };
 use owo_colors::OwoColorize;
@@ -7,16 +7,17 @@ use owo_colors::OwoColorize;
 pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layout: &Image) {
     let mut lines = Vec::new();
 
-    let (r, g, b) = colors.name;
-
     lines.push(String::new());
-
-    lines.push(format!("{}", info.name.bold().truecolor(r, g, b)));
-
-    lines.push("─".repeat(info.name.len()));
 
     for field in fields {
         let line = match field {
+            Field::User => {
+                let (r, g, b) = colors.name;
+                Some(format!("{}", info.name.bold().truecolor(r, g, b)))
+            }
+
+            Field::Underline(target) => Some(underline(target, info)),
+
             Field::Id => {
                 let (r, g, b) = colors.id;
                 Some(format!(
@@ -115,4 +116,53 @@ pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layou
         print!("{}", "\n".repeat(extra));
     }
     println!()
+}
+
+/// Give the field width for underline.
+fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
+    match field {
+        UnderlineField::User => info.name.len(),
+
+        UnderlineField::Id => format!("{:<12} {}", "ID", info.id).len(),
+
+        UnderlineField::TotalStars => format!("{:<12} {}", "Total Stars", info.total_stars).len(),
+
+        UnderlineField::Followers => format!("{:<12} {}", "Followers", info.followers).len(),
+
+        UnderlineField::Repos => format!("{:<12} {}", "Repos", info.public_repos).len(),
+
+        UnderlineField::Joined => format!("{:<12} {}", "Joined", info.created_at).len(),
+
+        UnderlineField::Company => match &info.company {
+            Some(company) => format!("{:<12} {}", "Company", company).len(),
+            None => 0,
+        },
+
+        UnderlineField::Location => match &info.location {
+            Some(location) => format!("{:<12} {}", "Location", location).len(),
+            None => 0,
+        },
+
+        UnderlineField::Twitter => match &info.twitter_user {
+            Some(twitter) => format!("{:<12} @{}", "Twitter", twitter).len(),
+            None => 0,
+        },
+
+        UnderlineField::Blog => match &info.blog {
+            Some(blog) => format!("{:<12} {}", "Blog", blog).len(),
+            None => 0,
+        },
+
+        UnderlineField::Bio => info.bio.as_deref().unwrap_or("").len(),
+    }
+}
+
+/// The actual underline.
+fn underline(target: &UnderlineTarget, info: &UserInfo) -> String {
+    let width = match target {
+        UnderlineTarget::Field(field) => field_width(*field, info),
+        UnderlineTarget::Width(width) => *width,
+    };
+
+    "─".repeat(width)
 }
