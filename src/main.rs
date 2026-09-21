@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let image_id = std::process::id();
 
     // Load the config and use it
-    let config = load_config();
+    let config = load_config()?;
     let fields = config.fields();
     let colors = Colors::from_config(&config);
     let image = Image::from_config(&config);

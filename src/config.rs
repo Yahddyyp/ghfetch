@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use serde::Deserialize;
 
 #[derive(Deserialize, Default)]
@@ -116,6 +117,7 @@ impl Color {
 #[derive(Deserialize, Default)]
 pub struct ColorsConfig {
     pub name: Option<Color>,
+    pub underline: Option<Color>,
     pub id: Option<Color>,
     pub total_stars: Option<Color>,
     pub followers: Option<Color>,
@@ -129,6 +131,7 @@ pub struct ColorsConfig {
 
 pub struct Colors {
     pub name: (u8, u8, u8),
+    pub underline: Option<(u8, u8, u8)>,
     pub id: (u8, u8, u8),
     pub total_stars: (u8, u8, u8),
     pub followers: (u8, u8, u8),
@@ -141,10 +144,12 @@ pub struct Colors {
 }
 
 impl Colors {
+    // Take the colors from the config file and use them
     pub fn from_config(config: &Config) -> Self {
         let c = &config.colors;
         Colors {
             name: c.name.map(Color::to_rgb).unwrap_or((203, 166, 247)),
+            underline: c.underline.map(Color::to_rgb),
             id: c.id.map(Color::to_rgb).unwrap_or((137, 220, 236)),
             total_stars: c.total_stars.map(Color::to_rgb).unwrap_or((166, 227, 161)),
             followers: c.followers.map(Color::to_rgb).unwrap_or((250, 179, 125)),
@@ -159,20 +164,23 @@ impl Colors {
 }
 
 /// Load the config from file.
-pub fn load_config() -> Config {
+pub fn load_config() -> Result<Config> {
     let path = match dirs::home_dir() {
         Some(home) => home.join(".config").join("ghfetch").join("config.toml"),
-        None => return Config::default(),
+        None => anyhow::bail!("could not find home directory"),
     };
 
     if !path.exists() {
         write_default_config(&path);
     }
 
-    match std::fs::read_to_string(&path) {
-        Ok(contents) => toml::from_str(&contents).unwrap_or_default(),
-        Err(_) => Config::default(),
-    }
+    let contents = std::fs::read_to_string(&path)
+        .with_context(|| format!("failed to read {}", path.display()))?;
+
+    let config = toml::from_str::<Config>(&contents)
+        .with_context(|| format!("failed to parse {}", path.display()))?;
+
+    Ok(config)
 }
 
 /// Write the default config.
@@ -199,6 +207,8 @@ fn write_default_config(path: &std::path::Path) {
 
 [colors]
 name = { r = 203, g = 166, b = 247 }
+# Uses the terminal's default foreground color if omitted
+# underline = { r = 255, g = 255, b = 255 }
 id = { r = 137, g = 220, b = 236 }
 total_stars = { r = 166, g = 227, b = 161 }
 followers = { r = 250, g = 179, b = 125 }

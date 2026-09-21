@@ -16,7 +16,7 @@ pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layou
                 Some(format!("{}", info.name.bold().truecolor(r, g, b)))
             }
 
-            Field::Underline(target) => Some(underline(target, info)),
+            Field::Underline(target) => Some(underline(target, info, colors)),
 
             Field::Id => {
                 let (r, g, b) = colors.id;
@@ -158,11 +158,16 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
 }
 
 /// The actual underline.
-fn underline(target: &UnderlineTarget, info: &UserInfo) -> String {
+fn underline(target: &UnderlineTarget, info: &UserInfo, colors: &Colors) -> String {
     let width = match target {
         UnderlineTarget::Field(field) => field_width(*field, info),
         UnderlineTarget::Width(width) => *width,
     };
 
-    "─".repeat(width)
+    let underline = "─".repeat(width);
+
+    match colors.underline {
+        Some((r, g, b)) => underline.truecolor(r, g, b).to_string(),
+        None => underline,
+    }
 }
