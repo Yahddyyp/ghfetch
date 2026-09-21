@@ -1,3 +1,4 @@
+use crate::config::{Layout, load_config};
 use crate::display_info::print_user_info;
 use crate::get_avatar_image::get_image;
 use crate::totalstars::get_total_stars;
@@ -5,6 +6,7 @@ use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
 use std::env;
 
+mod config;
 mod display_info;
 mod errors;
 mod get_avatar_image;
@@ -19,6 +21,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let has_token = token.is_ok();
     // ID of the image from the process id given by the os
     let image_id = std::process::id();
+
+    // Load the config and use it
+    let config = load_config();
+    let fields = config.fields();
+    let layout = Layout::from_config(&config);
 
     // If pat token is avalible use that or else use unauthorized
     // requests and build the client instance
@@ -46,10 +53,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         public_repos: user.public_repos,
         created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
 
-        bio: user
-            .bio
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
         company: user
             .company
             .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
@@ -66,12 +69,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .twitter_username
             .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
 
+        bio: user
+            .bio
+            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
+
         avatar_url: format!("{}&s=200", user.avatar_url),
     };
 
-    get_image(&user_info.avatar_url, image_id).await?;
+    get_image(&user_info.avatar_url, image_id, &layout).await?;
 
-    print_user_info(&user_info);
+    print_user_info(&user_info, &fields, &layout);
 
     Ok(())
 }

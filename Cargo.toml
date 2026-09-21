@@ -11,3 +11,6 @@ reqwest = "0.12"
 image = "0.25"
 owo-colors = "4.4.0"
 base64 = "0.22"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+dirs = "5"

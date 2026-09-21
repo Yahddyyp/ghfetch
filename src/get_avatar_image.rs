@@ -1,17 +1,14 @@
-use crate::display_info::LEFT_GAP;
+use crate::config::Layout;
 use anyhow::Result;
 use base64::Engine;
 use std::io::{self, Write};
 
 // Size of base64 data to send to kitty's image protocol
 const KITTY_CHUNK_SIZE: usize = 4096;
-// Size of the image
-pub const IMAGE_COLUMNS: usize = 24;
-pub const IMAGE_ROWS: usize = 12;
 
 /// Take the url, download the image, cache the image in mermory and covert it to png,
 /// base64 encodes it then send it to the terminal.
-pub async fn get_image(url: &str, image_id: u32) -> Result<()> {
+pub async fn get_image(url: &str, image_id: u32, layout: &Layout) -> Result<()> {
     let response = reqwest::get(url).await?.error_for_status()?;
 
     let bytes = response.bytes().await?;
@@ -58,10 +55,10 @@ pub async fn get_image(url: &str, image_id: u32) -> Result<()> {
 
     // Put the image correctly
     println!();
-    print!("{}", " ".repeat(LEFT_GAP));
+    print!("{}", " ".repeat(layout.left_gap));
     print!(
         "\x1b_Ga=p,i={},c={},r={},q=1;\x1b\\",
-        image_id, IMAGE_COLUMNS, IMAGE_ROWS
+        image_id, layout.image_columns, layout.image_rows
     );
 
     // Send everything buffered in stdout
