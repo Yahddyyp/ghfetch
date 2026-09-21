@@ -1,4 +1,4 @@
-use crate::config::Layout;
+use crate::config::Image;
 use anyhow::Result;
 use base64::Engine;
 use std::io::{self, Write};
@@ -8,7 +8,7 @@ const KITTY_CHUNK_SIZE: usize = 4096;
 
 /// Take the url, download the image, cache the image in mermory and covert it to png,
 /// base64 encodes it then send it to the terminal.
-pub async fn get_image(url: &str, image_id: u32, layout: &Layout) -> Result<()> {
+pub async fn get_image(url: &str, image_id: u32, layout: &Image) -> Result<()> {
     let response = reqwest::get(url).await?.error_for_status()?;
 
     let bytes = response.bytes().await?;

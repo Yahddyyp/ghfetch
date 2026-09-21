@@ -1,4 +1,4 @@
-use crate::config::{Layout, load_config};
+use crate::config::{Colors, Image, load_config};
 use crate::display_info::print_user_info;
 use crate::get_avatar_image::get_image;
 use crate::totalstars::get_total_stars;
@@ -25,7 +25,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load the config and use it
     let config = load_config();
     let fields = config.fields();
-    let layout = Layout::from_config(&config);
+    let colors = Colors::from_config(&config);
+    let image = Image::from_config(&config);
 
     // If pat token is avalible use that or else use unauthorized
     // requests and build the client instance
@@ -76,9 +77,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         avatar_url: format!("{}&s=200", user.avatar_url),
     };
 
-    get_image(&user_info.avatar_url, image_id, &layout).await?;
+    get_image(&user_info.avatar_url, image_id, &image).await?;
 
-    print_user_info(&user_info, &fields, &layout);
+    print_user_info(&user_info, &fields, &colors, &image);
 
     Ok(())
 }
