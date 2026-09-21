@@ -1,6 +1,6 @@
+use crate::errors::handle_octocrab_error;
 use octocrab::{Octocrab, models::UserProfile};
 
-#[derive(Debug)]
 pub struct UserInfo {
     pub name: String,
     pub followers: i32,
@@ -45,38 +45,11 @@ pub async fn get_user_info(
         }
     }
 
-    match octocrab.users(username).profile().await {
-        // If user actually exists
-        Ok(user) => Ok(user),
+    let user = octocrab
+        .users(username)
+        .profile()
+        .await
+        .unwrap_or_else(|e| handle_octocrab_error(username, e));
 
-        // No wifi
-        Err(octocrab::Error::Service { source, .. }) if source.to_string().contains("Connect") => {
-            eprintln!("No wifi");
-            std::process::exit(1);
-        }
-
-        // User was not found
-        Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::NOT_FOUND =>
-        {
-            eprintln!("user '{}' not found", username);
-            std::process::exit(1);
-        }
-
-        // API rate limit exceeded
-        Err(octocrab::Error::GitHub { source, .. })
-            if source.status_code == reqwest::StatusCode::FORBIDDEN
-                && source.message.to_lowercase().contains("rate limit") =>
-        {
-            eprintln!("GitHub API rate limit exceeded");
-            eprintln!("Try again later");
-            std::process::exit(1);
-        }
-
-        // IDK what happened
-        Err(e) => {
-            eprintln!("Unexpected error: {:#?}", e);
-            std::process::exit(1);
-        }
-    }
+    Ok(user)
 }

@@ -1,5 +1,5 @@
 [package]
-name = "github"
+name = "ghfetch"
 version = "0.1.0"
 edition = "2024"
 
@@ -7,10 +7,7 @@ edition = "2024"
 anyhow = "1.0.104"
 octocrab = "0.54.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
-reqwest = { version = "0.12", features = ["stream"] }
-image = "0.24"
-crossterm = "0.29.0"
+reqwest = "0.12"
+image = "0.25"
 owo-colors = "4.4.0"
-futures-util = "0.3"
-viuer = { version = "0.9", features = ["print-file"] }
-artem = "2"
+base64 = "0.22"
