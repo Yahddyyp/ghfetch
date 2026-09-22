@@ -1,5 +1,5 @@
 use crate::config_stuff::Image;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use base64::Engine;
 use std::io::{self, Write};
 
@@ -9,12 +9,16 @@ const KITTY_CHUNK_SIZE: usize = 4096;
 /// Take the url, download the image, cache the image in mermory and covert it to png,
 /// base64 encodes it then send it to the terminal.
 pub async fn get_image(url: &str, image_id: u32, layout: &Image) -> Result<()> {
-    let response = reqwest::get(url).await?.error_for_status()?;
+    let response = reqwest::get(url)
+        .await
+        .with_context(|| "failed to download github avatar")?
+        .error_for_status()
+        .with_context(|| "github avatar request returned an error")?;
 
     let bytes = response.bytes().await?;
 
     // Decode whatever format it is, then re-encode as PNG
-    let img = image::load_from_memory(&bytes)?;
+    let img = image::load_from_memory(&bytes).with_context(|| "failed to decode avatar image")?;
     let mut png_bytes: Vec<u8> = Vec::new();
     img.write_to(
         &mut std::io::Cursor::new(&mut png_bytes),

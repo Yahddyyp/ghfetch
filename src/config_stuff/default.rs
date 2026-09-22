@@ -1,7 +1,10 @@
+use anyhow::{Context, Result};
+
 /// Write the default config.
-pub fn write_default_config(path: &std::path::Path) {
+pub fn write_default_config(path: &std::path::Path) -> Result<()> {
     if let Some(parent) = path.parent() {
-        let _ = std::fs::create_dir_all(parent);
+        std::fs::create_dir_all(parent)
+            .with_context(|| format!("failed to create {}", parent.display()))?;
     }
 
     let default_contents = r#"fields = [
@@ -41,5 +44,7 @@ left_gap = 1
 right_gap = 3
 "#;
 
-    let _ = std::fs::write(path, default_contents);
+    std::fs::write(path, default_contents)
+        .with_context(|| format!("failed to write {}", path.display()))?;
+    Ok(())
 }

@@ -1,9 +1,9 @@
 // Handle the errors octocrab throws, then print a message then exit
 pub fn handle_octocrab_error(username: &str, e: octocrab::Error) -> ! {
     match e {
-        // No wifi
+        // No internet connection
         octocrab::Error::Service { source, .. } if source.to_string().contains("Connect") => {
-            eprintln!("No wifi");
+            eprintln!("No internet connection");
         }
 
         // User was not found
@@ -19,7 +19,6 @@ pub fn handle_octocrab_error(username: &str, e: octocrab::Error) -> ! {
                 && source.message.to_lowercase().contains("rate limit") =>
         {
             eprintln!("GitHub API rate limit exceeded");
-            eprintln!("Try again later");
         }
 
         // IDK what happened

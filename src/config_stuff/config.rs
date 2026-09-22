@@ -23,9 +23,10 @@ pub fn load_config() -> Result<Config> {
     };
 
     if !path.exists() {
-        write_default_config(&path);
+        write_default_config(&path)?;
     }
 
+    // Show Error if the config fails to read or parse
     let contents = std::fs::read_to_string(&path)
         .with_context(|| format!("failed to read {}", path.display()))?;
 
