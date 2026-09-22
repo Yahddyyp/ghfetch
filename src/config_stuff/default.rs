@@ -27,12 +27,12 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
 name = { r = 203, g = 166, b = 247 }
 # Uses the terminal's default foreground color if omitted
 # underline = { r = 255, g = 255, b = 255 }
-id = { r = 137, g = 220, b = 236 }
+id = { r = 137, g = 220, b = 235 }
 total_stars = { r = 166, g = 227, b = 161 }
-followers = { r = 250, g = 179, b = 125 }
-repos = { r = 116, g = 227, b = 161 }
+followers = { r = 250, g = 179, b = 135 }
+repos = { r = 116, g = 199, b = 236 }
 joined = { r = 137, g = 220, b = 235 }
-company = { r = 250, g = 179, b = 125 }
+company = { r = 250, g = 179, b = 135 }
 location = { r = 137, g = 220, b = 235 }
 twitter = { r = 203, g = 166, b = 247 }
 blog = { r = 203, g = 166, b = 247 }
