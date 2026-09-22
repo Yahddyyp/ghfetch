@@ -16,7 +16,50 @@ mod user_info;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let username = args.get(1).ok_or("no username provided")?;
+
+    // TODO: Convert the flag system to use clap instead of just a match
+    match args.get(1).map(String::as_str) {
+        Some("--help") | Some("-h") => {
+            println!("A way to beautifully display your github stats");
+            println!();
+            println!("Made by Yahddyyp");
+            println!();
+            println!("Usage:");
+            println!("    ghfetch <username>");
+            println!();
+            println!("Options:");
+            println!("    -h, --help       Print help");
+            println!("    -v, --version    Print version");
+
+            return Ok(());
+        }
+
+        Some("--version") | Some("-v") => {
+            println!("ghfetch {}", env!("CARGO_PKG_VERSION"));
+
+            return Ok(());
+        }
+
+        _ => {}
+    }
+
+    let username = match args.get(1) {
+        Some(username) => username,
+        None => {
+            println!("A way to beautifully display your github stats");
+            println!();
+            println!("Made by Yahddyyp");
+            println!();
+            println!("Usage:");
+            println!("    ghfetch <username>");
+            println!();
+            println!("Options:");
+            println!("    -h, --help       Print help");
+            println!("    -v, --version    Print version");
+            return Ok(());
+        }
+    };
+
     // Take GHFETCH_TOKEN from env, if it returns "" then take it as not being there
     let token = env::var("GHFETCH_TOKEN")
         .ok()
