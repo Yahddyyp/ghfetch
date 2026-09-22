@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("    ghfetch <username>");
             println!();
             println!("Options:");
-            println!("    -h, --help       Print help");
+            println!("    -h, --help       Print this message");
             println!("    -v, --version    Print version");
 
             return Ok(());
@@ -54,7 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("    ghfetch <username>");
             println!();
             println!("Options:");
-            println!("    -h, --help       Print help");
+            println!("    -h, --help       Print this message");
             println!("    -v, --version    Print version");
             return Ok(());
         }
