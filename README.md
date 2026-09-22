@@ -11,13 +11,12 @@ Ghfetch is a neofetch/fastfetch like tool for fetching github stats from differe
 - A terminal that supports kitty's image rendering protocol (eg: ghostty or kitty).
 
 > [!NOTE]
-> Different terminal may use different variations of the kitty image protcol like ghostty using unicode placeholder and so the placement may be one to two lines off.
+> Different terminals may use different variations of the kitty image protcol like ghostty using unicode placeholder and so the placement may be one to two lines off.
 
 #### Homebrew
 
 ```bash
-brew tap Yahddyyp/tap
-brew install ghfetch
+brew install Yahddyyp/tap/ghfetch
 ```
 
 #### From source
@@ -53,11 +52,11 @@ rate limits for unauthenticated requests.
 
 You can provide a GitHub **Personal Access Token** through:
 
-```
+```bash
 export GHFETCH_TOKEN="your_token"
 ```
 
-You do not need to give the personal access token any sorta permissions.
+You do not need to give the personal access token any sort of permissions.
 `ghfetch` will use the token for authenticated GitHub API requests.
 
 ### Configuration
@@ -70,7 +69,7 @@ The configuration file is located at:
 
 You can customize which fields are displayed in what order:
 
-```
+```toml
 fields = [
     "user",
     { underline = "user" }, # can take any sort of field or integer value
@@ -90,7 +89,7 @@ fields = [
 
 Colors can be by customized:
 
-```
+```toml
 name = { r = 203, g = 166, b = 247 }
 # Uses the terminal's default foreground color if omitted
 # underline = { r = 255, g = 255, b = 255 }
@@ -107,7 +106,7 @@ blog = { r = 203, g = 166, b = 247 }
 
 And customise how the image appears:
 
-```
+```toml
 [image]
 image_columns = 24
 image_rows = 12
