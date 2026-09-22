@@ -17,8 +17,11 @@ mod user_info;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let username = args.get(1).ok_or("no username provided")?;
-    let token = env::var("GHFETCH_TOKEN");
-    let has_token = token.is_ok();
+    // Take GHFETCH_TOKEN from env, if it returns "" then take it as not being there
+    let token = env::var("GHFETCH_TOKEN")
+        .ok()
+        .filter(|token| !token.is_empty());
+    let has_token = token.is_some();
     // ID of the image from the process id given by the os
     let image_id = std::process::id();
 
@@ -31,11 +34,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // If pat token is avalible use that or else use unauthorized
     // requests and build the client instance
     let octocrab = match &token {
-        Ok(token) => octocrab::Octocrab::builder()
+        Some(token) => octocrab::Octocrab::builder()
             .personal_token(token.clone())
             .build()?,
 
-        Err(_) => octocrab::Octocrab::builder().build()?,
+        None => octocrab::Octocrab::builder().build()?,
     };
 
     let (user_result, stars_result) = tokio::join!(
