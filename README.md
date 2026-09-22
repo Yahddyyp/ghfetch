@@ -10,8 +10,8 @@ Ghfetch is a neofetch/fastfetch like tool for fetching github stats from differe
 
 - A terminal that supports kitty's image rendering protocol (eg: ghostty or kitty).
 
-> [NOTE]
-> Different terminal may use different variations of the kitty image protcol like ghostty using unicode placeholder and hence the placement may be one to two lines off.
+> [!NOTE]
+> Different terminal may use different variations of the kitty image protcol like ghostty using unicode placeholder and so the placement may be one to two lines off.
 
 #### Homebrew
 
