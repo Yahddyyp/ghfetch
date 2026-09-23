@@ -10,7 +10,7 @@ All notable changes to this project are documented here.
 
 ## [1.0.1] - 2026-09-22
 
-This release was made as i messed up the first release
+This release was made as i messed up the first release and the ghfetch version is still v1.0.0
 
 ## [1.0.0] - 2026-09-22
 
