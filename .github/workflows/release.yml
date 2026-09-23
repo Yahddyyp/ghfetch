@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-14
+
+          - target: x86_64-apple-darwin
+            os: macos-14
+
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ARCHIVE="ghfetch-v${VERSION}-${{ matrix.target }}.tar.gz"
+
+          mkdir package
+          cp "target/${{ matrix.target }}/release/ghfetch" package/
+
+          tar -czf "$ARCHIVE" -C package ghfetch
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghfetch-${{ matrix.target }}
+          path: "*.tar.gz"
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: ghfetch-*
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: artifacts
+        run: |
+          sha256sum *.tar.gz > SHA256SUMS
+
+      - name: Extract changelog
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          awk -v version="$VERSION" '
+            $0 ~ "^## \\[" version "\\]" {
+              found=1
+              next
+            }
+
+            found && $0 ~ "^## \\[" {
+              exit
+            }
+
+            found {
+              print
+            }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "No changelog entry found for v${VERSION}"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            artifacts/*.tar.gz \
+            artifacts/SHA256SUMS \
+            --title "ghfetch ${GITHUB_REF_NAME}" \
+            --notes-file RELEASE_NOTES.md
