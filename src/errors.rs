@@ -10,7 +10,7 @@ pub fn handle_octocrab_error(username: &str, e: octocrab::Error) -> ! {
         octocrab::Error::GitHub { source, .. }
             if source.status_code == reqwest::StatusCode::NOT_FOUND =>
         {
-            eprintln!("user '{}' not found", username);
+            eprintln!("User '{}' not found", username);
         }
 
         // API rate limit exceeded

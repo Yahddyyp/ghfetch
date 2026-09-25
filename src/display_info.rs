@@ -4,92 +4,101 @@ use crate::{
 };
 use owo_colors::OwoColorize;
 
-pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layout: &Image) {
+/// Check if the fields need to be colorized.
+fn colorize(text: &str, color: (u8, u8, u8), enabled: bool) -> String {
+    if enabled {
+        let (r, g, b) = color;
+        text.bold().truecolor(r, g, b).to_string()
+    } else {
+        text.to_string()
+    }
+}
+
+/// Format the text.
+fn format_text(text: &str, color: (u8, u8, u8), enabled: bool) -> String {
+    let text = format!("{:<12}", text);
+    colorize(&text, color, enabled)
+}
+
+/// Print and display the user info nicely.
+pub fn print_user_info(
+    info: &UserInfo,
+    fields: &[Field],
+    colors: &Colors,
+    layout: &Image,
+    show_avatar: bool,
+) {
     let mut lines = Vec::new();
 
     lines.push(String::new());
 
     for field in fields {
         let line = match field {
-            Field::User => {
-                let (r, g, b) = colors.name;
-                Some(format!("{}", info.name.bold().truecolor(r, g, b)))
-            }
+            Field::User => Some(colorize(&info.name, colors.name, colors.enabled)),
 
             Field::Underline(target) => Some(underline(target, info, colors)),
 
-            Field::Id => {
-                let (r, g, b) = colors.id;
-                Some(format!(
-                    "{:<12} {}",
-                    "ID".bold().truecolor(r, g, b),
-                    info.id
-                ))
-            }
+            Field::Id => Some(format!(
+                "{} {}",
+                format_text("ID", colors.id, colors.enabled),
+                info.id
+            )),
 
-            Field::TotalStars => {
-                let (r, g, b) = colors.total_stars;
-                Some(format!(
-                    "{:<12} {}",
-                    "Total Stars".bold().truecolor(r, g, b),
-                    info.total_stars
-                ))
-            }
+            Field::TotalStars => Some(format!(
+                "{} {}",
+                format_text("Total Stars", colors.total_stars, colors.enabled),
+                info.total_stars
+            )),
 
-            Field::Followers => {
-                let (r, g, b) = colors.followers;
-                Some(format!(
-                    "{:<12} {}",
-                    "Followers".bold().truecolor(r, g, b),
-                    info.followers
-                ))
-            }
+            Field::Followers => Some(format!(
+                "{} {}",
+                format_text("Followers", colors.followers, colors.enabled),
+                info.followers
+            )),
 
-            Field::Repos => {
-                let (r, g, b) = colors.repos;
-                Some(format!(
-                    "{:<12} {}",
-                    "Repos".bold().truecolor(r, g, b),
-                    info.public_repos
-                ))
-            }
+            Field::Repos => Some(format!(
+                "{} {}",
+                format_text("Repos", colors.repos, colors.enabled),
+                info.public_repos
+            )),
 
-            Field::Joined => {
-                let (r, g, b) = colors.joined;
-                Some(format!(
-                    "{:<12} {}",
-                    "Joined".bold().truecolor(r, g, b),
-                    info.created_at
-                ))
-            }
+            Field::Joined => Some(format!(
+                "{} {}",
+                format_text("Joined", colors.joined, colors.enabled),
+                info.created_at
+            )),
 
-            Field::Company => {
-                let (r, g, b) = colors.company;
-                info.company
-                    .as_ref()
-                    .map(|c| format!("{:<12} {}", "Company".bold().truecolor(r, g, b), c))
-            }
+            Field::Company => info.company.as_ref().map(|c| {
+                format!(
+                    "{} {}",
+                    format_text("Company", colors.company, colors.enabled),
+                    c
+                )
+            }),
 
-            Field::Location => {
-                let (r, g, b) = colors.location;
-                info.location
-                    .as_ref()
-                    .map(|l| format!("{:<12} {}", "Location".bold().truecolor(r, g, b), l))
-            }
+            Field::Location => info.location.as_ref().map(|l| {
+                format!(
+                    "{} {}",
+                    format_text("Location", colors.location, colors.enabled),
+                    l
+                )
+            }),
 
-            Field::Twitter => {
-                let (r, g, b) = colors.twitter;
-                info.twitter_user
-                    .as_ref()
-                    .map(|t| format!("{:<12} @{}", "Twitter".bold().truecolor(r, g, b), t))
-            }
+            Field::Twitter => info.twitter_user.as_ref().map(|t| {
+                format!(
+                    "{} @{}",
+                    format_text("Twitter", colors.twitter, colors.enabled),
+                    t
+                )
+            }),
 
-            Field::Blog => {
-                let (r, g, b) = colors.blog;
-                info.blog
-                    .as_ref()
-                    .map(|bl| format!("{:<12} {}", "Blog".bold().truecolor(r, g, b), bl))
-            }
+            Field::Blog => info.blog.as_ref().map(|bl| {
+                format!(
+                    "{} {}",
+                    format_text("Blog", colors.blog, colors.enabled),
+                    bl
+                )
+            }),
 
             Field::Break => Some(String::new()),
 
@@ -101,9 +110,22 @@ pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layou
         }
     }
 
-    print!("\x1b[{}A\r", layout.image_rows);
+    // Remove the empty string if that is the last thing in the lines
+    while lines.len() > 1 && lines.last().is_some_and(String::is_empty) {
+        lines.pop();
+    }
 
-    let indent = " ".repeat(layout.left_gap + layout.image_columns + layout.right_gap);
+    let indent = if show_avatar {
+        " ".repeat(layout.left_gap + layout.image_columns + layout.right_gap)
+    } else {
+        // No left gap for no avatar
+        String::new()
+    };
+
+    if show_avatar {
+        print!("\x1b[{}A\r", layout.image_rows);
+    }
+
     let text_line_count = lines.len();
 
     for line in lines {
@@ -111,11 +133,16 @@ pub fn print_user_info(info: &UserInfo, fields: &[Field], colors: &Colors, layou
     }
 
     // Ensure the cursor ends up below whichever is taller
-    if layout.image_rows > text_line_count {
+    if show_avatar && layout.image_rows > text_line_count {
         let extra = layout.image_rows - text_line_count;
-        print!("{}", "\n".repeat(extra));
+        if extra > 1 {
+            print!("{}", "\n".repeat(extra - 1));
+        }
     }
-    println!()
+
+    if show_avatar {
+        println!();
+    }
 }
 
 /// Give the field width for underline.
@@ -166,8 +193,8 @@ fn underline(target: &UnderlineTarget, info: &UserInfo, colors: &Colors) -> Stri
 
     let underline = "─".repeat(width);
 
-    match colors.underline {
-        Some((r, g, b)) => underline.truecolor(r, g, b).to_string(),
-        None => underline,
+    match (colors.enabled, colors.underline) {
+        (true, Some((r, g, b))) => underline.truecolor(r, g, b).to_string(),
+        _ => underline,
     }
 }

@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 pub fn write_default_config(path: &std::path::Path) -> Result<()> {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)
-            .with_context(|| format!("failed to create {}", parent.display()))?;
+            .with_context(|| format!("Failed to create {}", parent.display()))?;
     }
 
     let default_contents = r#"fields = [
@@ -45,6 +45,6 @@ right_gap = 3
 "#;
 
     std::fs::write(path, default_contents)
-        .with_context(|| format!("failed to write {}", path.display()))?;
+        .with_context(|| format!("Failed to write {}", path.display()))?;
     Ok(())
 }

@@ -9,8 +9,9 @@ octocrab = "0.54.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 reqwest = "0.12"
 image = "0.25"
-owo-colors = "4.4.0"
+owo-colors = { version = "4.4.0", features = ["supports-colors"] }
 base64 = "0.22"
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
 dirs = "5"
+clap = { version = "4.6.7", features = ["derive"] }

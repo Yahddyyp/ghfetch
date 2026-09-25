@@ -18,16 +18,10 @@ pub struct UserInfo {
 
 /// Build the client instance and get the info
 pub async fn get_user_info(
-    args: &[String],
     username: &str,
     octocrab: &Octocrab,
     token: bool,
 ) -> Result<UserProfile, Box<dyn std::error::Error>> {
-    if args.len() >= 3 {
-        eprintln!("Cannot take more than two arguments");
-        std::process::exit(1);
-    }
-
     // Check if PAT actually works
     if token {
         match octocrab.current().user().await {
