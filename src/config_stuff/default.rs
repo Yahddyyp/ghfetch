@@ -14,6 +14,7 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
     "total_stars",
     "followers",
     "repos",
+    "issues",
     "joined",
     "company",
     "location",
@@ -31,6 +32,7 @@ id = { r = 137, g = 220, b = 235 }
 total_stars = { r = 166, g = 227, b = 161 }
 followers = { r = 250, g = 179, b = 135 }
 repos = { r = 116, g = 199, b = 236 }
+issues = {r = 249, g = 226, b = 175}
 joined = { r = 137, g = 220, b = 235 }
 company = { r = 250, g = 179, b = 135 }
 location = { r = 137, g = 220, b = 235 }

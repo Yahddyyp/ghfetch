@@ -7,6 +7,7 @@ pub struct UserInfo {
     pub avatar_url: String,
     pub created_at: String,
     pub public_repos: u64,
+    pub issues: u32,
     pub twitter_user: Option<String>,
     pub company: Option<String>,
     pub location: Option<String>,

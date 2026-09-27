@@ -1,6 +1,7 @@
 use crate::config_stuff::{Colors, Image, load_config};
 use crate::display_info::print_user_info;
 use crate::get_avatar_image::get_image;
+use crate::total_issues::get_issues;
 use crate::totalstars::get_total_stars;
 use crate::user_info::{UserInfo, get_user_info};
 use anyhow::Result;
@@ -11,6 +12,7 @@ mod config_stuff;
 mod display_info;
 mod errors;
 mod get_avatar_image;
+mod total_issues;
 mod totalstars;
 mod user_info;
 
@@ -77,20 +79,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => octocrab::Octocrab::builder().build()?,
     };
 
-    let (user_result, stars_result) = tokio::join!(
+    let (user_result, stars_result, issues_result) = tokio::join!(
         get_user_info(username, &octocrab, has_token),
-        get_total_stars(&octocrab, username)
+        get_total_stars(&octocrab, username),
+        get_issues(&octocrab, username)
     );
 
     let user = user_result?;
     let total_stars = stars_result;
+    let total_issues = issues_result;
 
     let user_info = UserInfo {
         name: user.login,
         id: user.id.0.try_into()?,
-        total_stars,
+        total_stars: total_stars,
         followers: user.followers.try_into()?,
         public_repos: user.public_repos,
+        issues: total_issues,
         created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
 
         company: user

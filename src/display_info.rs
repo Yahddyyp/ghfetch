@@ -62,6 +62,12 @@ pub fn print_user_info(
                 info.public_repos
             )),
 
+            Field::Issues => Some(format!(
+                "{} {}",
+                format_text("Issues", colors.issues, colors.enabled),
+                info.issues
+            )),
+
             Field::Joined => Some(format!(
                 "{} {}",
                 format_text("Joined", colors.joined, colors.enabled),
@@ -157,6 +163,8 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
         UnderlineField::Followers => format!("{:<12} {}", "Followers", info.followers).len(),
 
         UnderlineField::Repos => format!("{:<12} {}", "Repos", info.public_repos).len(),
+
+        UnderlineField::Issues => format!("{:<12} {}", "Issues", info.issues).len(),
 
         UnderlineField::Joined => format!("{:<12} {}", "Joined", info.created_at).len(),
 
