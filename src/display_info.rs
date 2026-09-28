@@ -30,8 +30,6 @@ pub fn print_user_info(
 ) {
     let mut lines = Vec::new();
 
-    lines.push(String::new());
-
     for field in fields {
         let line = match field {
             Field::User => Some(colorize(&info.name, colors.name, colors.enabled)),
@@ -106,19 +104,22 @@ pub fn print_user_info(
                 )
             }),
 
-            Field::Break => Some(String::new()),
+            Field::Break => info
+                .bio
+                .as_deref()
+                .filter(|bio| !bio.trim().is_empty())
+                .map(|_| String::new()),
 
-            Field::Bio => info.bio.as_ref().map(|b| b.to_string()),
+            Field::Bio => info
+                .bio
+                .as_deref()
+                .filter(|bio| !bio.trim().is_empty())
+                .map(str::to_owned),
         };
 
         if let Some(line) = line {
             lines.push(line);
         }
-    }
-
-    // Remove the empty string if that is the last thing in the lines
-    while lines.len() > 1 && lines.last().is_some_and(String::is_empty) {
-        lines.pop();
     }
 
     let indent = if show_avatar {
@@ -129,7 +130,9 @@ pub fn print_user_info(
     };
 
     if show_avatar {
-        print!("\x1b[{}A\r", layout.image_rows);
+        print!("\x1b[{}A\r", layout.image_rows.saturating_sub(1));
+    } else {
+        println!();
     }
 
     let text_line_count = lines.len();
@@ -138,16 +141,16 @@ pub fn print_user_info(
         println!("{indent}{line}");
     }
 
-    // Ensure the cursor ends up below whichever is taller
-    if show_avatar && layout.image_rows > text_line_count {
-        let extra = layout.image_rows - text_line_count;
-        if extra > 1 {
-            print!("{}", "\n".repeat(extra - 1));
-        }
-    }
-
     if show_avatar {
-        println!();
+        let extra = layout.image_rows.saturating_sub(text_line_count);
+
+        if extra > 0 {
+            print!("{}", "\n".repeat(extra));
+        }
+
+        print!("\n");
+    } else {
+        print!("\n");
     }
 }
 
