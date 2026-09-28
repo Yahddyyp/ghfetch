@@ -141,17 +141,17 @@ pub fn print_user_info(
         println!("{indent}{line}");
     }
 
-    if show_avatar {
-        let extra = layout.image_rows.saturating_sub(text_line_count);
-
-        if extra > 0 {
-            print!("{}", "\n".repeat(extra));
-        }
-
-        print!("\n");
+    let extra = if show_avatar {
+        layout.image_rows.saturating_sub(text_line_count + 1)
     } else {
-        print!("\n");
+        0
+    };
+
+    if show_avatar && extra > 0 {
+        print!("{}", "\n".repeat(extra));
     }
+
+    print!("\n");
 }
 
 /// Give the field width for underline.
