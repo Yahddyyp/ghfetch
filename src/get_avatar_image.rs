@@ -72,7 +72,7 @@ pub async fn get_image(url: &str, image_id: u32, layout: &Image) -> Result<()> {
 }
 
 /// Take data in base64 bytes and check it is the first and whether more bytes are
-/// coming the send the text as a escape sequence. &[u8] instead of Vec<u8> as it just needs to read the data not own it.
+/// coming then send the text as a escape sequence. &[u8] instead of Vec<u8> as it just needs to read the data not own it.
 pub fn send_escape_sequence(data: &[u8], first: bool, more: bool, image_id: u32) -> Result<()> {
     // If there is more chunks coming 1 else 0
     let more = if more { 1 } else { 0 };
