@@ -6,7 +6,6 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- Automated release builds for macOS and Linux.
 - `--no-avatar` and `--no-color` flags.
 
 ## Changed
@@ -23,16 +22,4 @@ This release was made as the first release was messed up. ghfetch version is sti
 
 ## [1.0.0] - 2026-09-22
 
-### Added
-
-- Initial release of ghfetch.
-- Configurable fields and colors.
-- Configurable terminal profile image.
-- Kitty Graphics Protocol image rendering.
-- GitHub token support.
-- `--help` and `--version` options.
-
-### Changed
-
-- Improved GitHub API handling.
-- Improved configuration handling.
+- Initial release
