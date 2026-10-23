@@ -1,20 +1,15 @@
 use crate::config_stuff::{Colors, Image, load_config};
-use crate::display_info::print_user_info;
-use crate::get_avatar_image::get_image;
-use crate::total_issues::get_issues;
-use crate::totalstars::get_total_stars;
-use crate::user_info::{UserInfo, get_user_info};
+use crate::info::{
+    build_user_info, get_image, get_octocrab, get_total_issues, get_total_stars, get_user_info,
+    print_user_info,
+};
+
 use anyhow::Result;
 use clap::Parser;
 use std::env;
 
 mod config_stuff;
-mod display_info;
-mod errors;
-mod get_avatar_image;
-mod total_issues;
-mod totalstars;
-mod user_info;
+mod info;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -46,12 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let username = &cli.username;
 
-    // Take GHFETCH_TOKEN from env, if it returns "" then take it as not being there
-    let token = env::var("GHFETCH_TOKEN")
-        .ok()
-        .filter(|token| !token.is_empty());
-
-    let has_token = token.is_some();
+    let token = env::var("GHFETCH_TOKEN").ok();
+    let (octocrab, has_token) = get_octocrab(token)?;
 
     // ID of the image from the process id given by the os
     let image_id = std::process::id();
@@ -69,57 +60,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let image = Image::from_config(&config);
 
-    // If pat token is avalible use that or else use unauthorized
-    // requests and build the client instance
-    let octocrab = match &token {
-        Some(token) => octocrab::Octocrab::builder()
-            .personal_token(token.clone())
-            .build()?,
-
-        None => octocrab::Octocrab::builder().build()?,
-    };
-
     let (user_result, stars_result, issues_result) = tokio::join!(
         get_user_info(username, &octocrab, has_token),
         get_total_stars(&octocrab, username),
-        get_issues(&octocrab, username)
+        get_total_issues(&octocrab, username)
     );
 
     let user = user_result?;
     let total_stars = stars_result;
     let total_issues = issues_result;
 
-    let user_info = UserInfo {
-        name: user.login,
-        id: user.id.0.try_into()?,
-        total_stars: total_stars,
-        followers: user.followers.try_into()?,
-        public_repos: user.public_repos,
-        issues: total_issues,
-        created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
-
-        company: user
-            .company
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
-        location: user
-            .location
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
-        blog: user
-            .blog
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
-        twitter_user: user
-            .twitter_username
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
-        bio: user
-            .bio
-            .map(|b| b.split_whitespace().collect::<Vec<_>>().join(" ")),
-
-        avatar_url: format!("{}&s=200", user.avatar_url),
-    };
+    let user_info = build_user_info(user, total_stars, total_issues)?;
 
     if !cli.no_avatar {
         get_image(&user_info.avatar_url, image_id, &image).await?;

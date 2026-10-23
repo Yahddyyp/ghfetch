@@ -1,4 +1,4 @@
-use crate::errors::handle_octocrab_error;
+use crate::info::errors::handle_octocrab_error;
 
 /// Sum up all the stars of the public repos
 pub async fn get_total_stars(octocrab: &octocrab::Octocrab, username: &str) -> u32 {

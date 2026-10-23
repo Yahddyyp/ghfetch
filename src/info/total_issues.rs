@@ -1,7 +1,7 @@
-use crate::errors::handle_octocrab_error;
+use crate::info::errors::handle_octocrab_error;
 
 /// Get the total issues of the user.
-pub async fn get_issues(octocrab: &octocrab::Octocrab, username: &str) -> u32 {
+pub async fn get_total_issues(octocrab: &octocrab::Octocrab, username: &str) -> u32 {
     let query = format!("author:{} type:issue", username);
 
     let page = octocrab

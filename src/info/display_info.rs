@@ -1,6 +1,6 @@
 use crate::{
     config_stuff::{Colors, Field, Image, UnderlineField, UnderlineTarget},
-    user_info::UserInfo,
+    info::user_info::UserInfo,
 };
 use owo_colors::OwoColorize;
 
@@ -45,7 +45,7 @@ pub fn print_user_info(
             Field::TotalStars => Some(format!(
                 "{} {}",
                 format_text("Total Stars", colors.total_stars, colors.enabled),
-                info.total_stars
+                info.stars
             )),
 
             Field::Followers => Some(format!(
@@ -151,7 +151,7 @@ pub fn print_user_info(
         print!("{}", "\n".repeat(extra));
     }
 
-    print!("\n");
+    println!();
 }
 
 /// Give the field width for underline.
@@ -161,7 +161,7 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
 
         UnderlineField::Id => format!("{:<12} {}", "ID", info.id).len(),
 
-        UnderlineField::TotalStars => format!("{:<12} {}", "Total Stars", info.total_stars).len(),
+        UnderlineField::TotalStars => format!("{:<12} {}", "Total Stars", info.stars).len(),
 
         UnderlineField::Followers => format!("{:<12} {}", "Followers", info.followers).len(),
 

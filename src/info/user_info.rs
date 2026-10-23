@@ -1,4 +1,4 @@
-use crate::errors::handle_octocrab_error;
+use crate::info::errors::handle_octocrab_error;
 use octocrab::{Octocrab, models::UserProfile};
 
 pub struct UserInfo {
@@ -14,7 +14,7 @@ pub struct UserInfo {
     pub id: i64,
     pub bio: Option<String>,
     pub blog: Option<String>,
-    pub total_stars: u32,
+    pub stars: u32,
 }
 
 /// Build the client instance and get the info
