@@ -30,8 +30,13 @@ pub fn load_config() -> Result<Config> {
     let contents = std::fs::read_to_string(&path)
         .with_context(|| format!("Failed to read {}", path.display()))?;
 
-    let config = toml::from_str::<Config>(&contents)
-        .with_context(|| format!("Failed to parse {}", path.display()))?;
+    let config = toml::from_str::<Config>(&contents).map_err(|e| {
+        anyhow::anyhow!(
+            "Failed to parse {}:\n{}",
+            path.display(),
+            e.to_string().trim_end()
+        )
+    })?;
 
     Ok(config)
 }

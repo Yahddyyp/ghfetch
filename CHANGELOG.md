@@ -8,9 +8,15 @@ All notable changes to this project are documented here.
 
 - `--no-avatar` and `--no-color` flags.
 
-## Changed
+### Changed
 
 - Switched from a match to using clap for cli management.
+- Changed `total_stars` to just `stars`.
+- Made toml error have only one blank line instead of two.
+
+### Fixed
+
+- Two blank lines being made instead of one on some profiles.
 
 ## [1.0.1] - 2026-09-22
 

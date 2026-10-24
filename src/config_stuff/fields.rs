@@ -7,7 +7,7 @@ impl Config {
             vec![
                 Field::User,
                 Field::Id,
-                Field::TotalStars,
+                Field::Stars,
                 Field::Followers,
                 Field::Repos,
                 Field::Issues,
@@ -27,7 +27,7 @@ impl Config {
 pub enum UnderlineField {
     User,
     Id,
-    TotalStars,
+    Stars,
     Followers,
     Repos,
     Issues,
@@ -52,7 +52,7 @@ pub enum Field {
     User,
     Underline(UnderlineTarget),
     Id,
-    TotalStars,
+    Stars,
     Followers,
     Repos,
     Issues,

@@ -42,9 +42,9 @@ pub fn print_user_info(
                 info.id
             )),
 
-            Field::TotalStars => Some(format!(
+            Field::Stars => Some(format!(
                 "{} {}",
-                format_text("Total Stars", colors.total_stars, colors.enabled),
+                format_text("Stars", colors.stars, colors.enabled),
                 info.stars
             )),
 
@@ -141,17 +141,18 @@ pub fn print_user_info(
         println!("{indent}{line}");
     }
 
-    let extra = if show_avatar {
-        layout.image_rows.saturating_sub(text_line_count + 1)
+    // Determine the taller element between the avatar image and the fields
+    let max_lines = if show_avatar {
+        layout.image_rows.max(text_line_count)
     } else {
-        0
+        text_line_count
     };
 
-    if show_avatar && extra > 0 {
+    // Pad down if the image is taller than the text
+    let extra = max_lines.saturating_sub(text_line_count);
+    if extra > 0 {
         print!("{}", "\n".repeat(extra));
     }
-
-    println!();
 }
 
 /// Give the field width for underline.
@@ -161,7 +162,7 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
 
         UnderlineField::Id => format!("{:<12} {}", "ID", info.id).len(),
 
-        UnderlineField::TotalStars => format!("{:<12} {}", "Total Stars", info.stars).len(),
+        UnderlineField::Stars => format!("{:<12} {}", "Stars", info.stars).len(),
 
         UnderlineField::Followers => format!("{:<12} {}", "Followers", info.followers).len(),
 

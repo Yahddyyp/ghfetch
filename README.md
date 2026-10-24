@@ -10,9 +10,6 @@ Ghfetch is a neofetch/fastfetch like tool for fetching github stats from differe
 
 - A terminal that supports kitty's image rendering protocol (eg: ghostty or kitty).
 
-> [!NOTE]
-> Different terminals may use different variations of the kitty image protcol like ghostty using unicode placeholder and so the placement may be one to two lines off.
-
 #### Homebrew
 
 ```bash
@@ -22,8 +19,8 @@ brew install Yahddyyp/tap/ghfetch
 #### From source
 
 ```bash
-git clone https://github.com/Yahddyyp/gh-fetch.git
-cd gh-fetch
+git clone https://github.com/Yahddyyp/ghfetch.git
+cd ghfetch
 cargo build --release
 ```
 
@@ -74,7 +71,7 @@ fields = [
   "user",
   { underline = "user" }, # can take any sort of field or integer value
   "id",
-  "total_stars",
+  "stars",
   "followers",
   "repos",
   "joined",
@@ -94,7 +91,7 @@ name = { r = 203, g = 166, b = 247 }
 # Uses the terminal's default foreground color if omitted
 # underline = { r = 255, g = 255, b = 255 }
 id = { r = 137, g = 220, b = 235 }
-total_stars = { r = 166, g = 227, b = 161 }
+stars = { r = 166, g = 227, b = 161 }
 followers = { r = 250, g = 179, b = 135 }
 repos = { r = 116, g = 199, b = 236 }
 joined = { r = 137, g = 220, b = 235 }
