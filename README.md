@@ -71,19 +71,19 @@ You can customize which fields are displayed in what order:
 
 ```toml
 fields = [
-    "user",
-    { underline = "user" }, # can take any sort of field or integer value
-    "id",
-    "total_stars",
-    "followers",
-    "repos",
-    "joined",
-    "company",
-    "location",
-    "twitter",
-    "blog",
-    "break",
-    "bio",
+  "user",
+  { underline = "user" }, # can take any sort of field or integer value
+  "id",
+  "total_stars",
+  "followers",
+  "repos",
+  "joined",
+  "company",
+  "location",
+  "twitter",
+  "blog",
+  "break",
+  "bio",
 ]
 ```
 

@@ -8,20 +8,20 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
     }
 
     let default_contents = r#"fields = [
-    "user",
-    { underline = "user" },
-    "id",
-    "total_stars",
-    "followers",
-    "repos",
-    "issues",
-    "joined",
-    "company",
-    "location",
-    "twitter",
-    "blog",
-    "break",
-    "bio",
+  "user",
+  { underline = "user" },
+  "id",
+  "total_stars",
+  "followers",
+  "repos",
+  "issues",
+  "joined",
+  "company",
+  "location",
+  "twitter",
+  "blog",
+  "break",
+  "bio",
 ]
 
 [colors]
