@@ -7,6 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - `--no-avatar` and `--no-color` flags.
+- Added `issues`.
 
 ### Changed
 
@@ -17,6 +18,7 @@ All notable changes to this project are documented here.
 ### Fixed
 
 - Two blank lines being made instead of one on some profiles.
+- Remove the duplicate token retrival in `main.rs`.
 
 ## [1.0.1] - 2026-09-22
 
