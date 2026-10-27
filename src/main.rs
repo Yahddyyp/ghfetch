@@ -6,7 +6,6 @@ use crate::info::{
 
 use anyhow::Result;
 use clap::Parser;
-use std::env;
 
 mod config_stuff;
 mod info;
@@ -41,8 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let username = &cli.username;
 
-    let token = env::var("GHFETCH_TOKEN").ok();
-    let (octocrab, has_token) = get_octocrab(token)?;
+    let (octocrab, has_token) = get_octocrab()?;
 
     // ID of the image from the process id given by the os
     let image_id = std::process::id();

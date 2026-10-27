@@ -4,12 +4,12 @@ use std::{env, process::Command};
 
 /// Get token for authorized requests:
 /// GITHUB_TOKEN -> gh auth token -> GHFETCH_TOKEN -> Unauthorized requests
-pub fn get_octocrab(token: Option<String>) -> Result<(Octocrab, bool)> {
+pub fn get_octocrab() -> Result<(Octocrab, bool)> {
     let token = env::var("GITHUB_TOKEN")
         .ok()
         .and_then(clean_token)
         .or_else(get_gh_token)
-        .or_else(|| token.and_then(clean_token));
+        .or_else(|| env::var("GHFETCH_TOKEN").ok().and_then(clean_token));
 
     let has_token = token.is_some();
 
