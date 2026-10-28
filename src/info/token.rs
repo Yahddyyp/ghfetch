@@ -5,18 +5,18 @@ use std::{env, process::Command};
 
 /// Validate that the token is authorized before making requests.
 pub async fn validate_token(octocrab: &Octocrab, token_source: Option<&str>) {
-    if let Some(source) = token_source {
-        if let Err(e) = octocrab.current().user().await {
-            match e {
-                octocrab::Error::GitHub { source: gh_err, .. }
-                    if gh_err.status_code == reqwest::StatusCode::UNAUTHORIZED =>
-                {
-                    eprintln!("{source} is not valid");
-                    std::process::exit(1);
-                }
-
-                other => handle_octocrab_error("", other),
+    if let Some(source) = token_source
+        && let Err(e) = octocrab.current().user().await
+    {
+        match e {
+            octocrab::Error::GitHub { source: gh_err, .. }
+                if gh_err.status_code == reqwest::StatusCode::UNAUTHORIZED =>
+            {
+                eprintln!("{source} is not valid");
+                std::process::exit(1);
             }
+
+            other => handle_octocrab_error("", other),
         }
     }
 }
