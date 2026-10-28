@@ -17,32 +17,11 @@ pub struct UserInfo {
     pub stars: u32,
 }
 
-/// Build the client instance and get the info
-pub async fn get_user_info(
-    username: &str,
-    octocrab: &Octocrab,
-    token_source: Option<&'static str>,
-) -> Result<UserProfile, Box<dyn std::error::Error>> {
-    // Check if PAT actually works
-    if let Some(source) = token_source {
-        match octocrab.current().user().await {
-            Err(octocrab::Error::GitHub { .. }) => {
-                eprintln!("{source} is not valid");
-                std::process::exit(1);
-            }
-            Err(e) => {
-                eprintln!("Error validating token from {source}: {e:#?}");
-                std::process::exit(1);
-            }
-            Ok(_) => (),
-        }
-    }
-
-    let user = octocrab
+/// Fetch the user profile
+pub async fn get_user_info(username: &str, octocrab: &Octocrab) -> UserProfile {
+    octocrab
         .users(username)
         .profile()
         .await
-        .unwrap_or_else(|e| handle_octocrab_error(username, e));
-
-    Ok(user)
+        .unwrap_or_else(|e| handle_octocrab_error(username, e))
 }

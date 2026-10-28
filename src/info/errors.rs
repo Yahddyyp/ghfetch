@@ -1,4 +1,6 @@
-// Handle the errors octocrab throws, then print a message then exit
+use reqwest::StatusCode;
+
+/// Handle the errors octocrab throws.
 pub fn handle_octocrab_error(username: &str, e: octocrab::Error) -> ! {
     match e {
         // No internet connection
@@ -6,25 +8,32 @@ pub fn handle_octocrab_error(username: &str, e: octocrab::Error) -> ! {
             eprintln!("No internet connection");
         }
 
-        // User was not found
+        // User not found
+        octocrab::Error::GitHub { source, .. } if source.status_code == StatusCode::NOT_FOUND => {
+            eprintln!("User '{username}' not found");
+        }
+
+        // Bad token
         octocrab::Error::GitHub { source, .. }
-            if source.status_code == reqwest::StatusCode::NOT_FOUND =>
+            if source.status_code == StatusCode::UNAUTHORIZED =>
         {
-            eprintln!("User '{}' not found", username);
+            eprintln!("GitHub token is not valid");
         }
 
         // API rate limit exceeded
         octocrab::Error::GitHub { source, .. }
-            if source.status_code == reqwest::StatusCode::FORBIDDEN
-                && source.message.to_lowercase().contains("rate limit") =>
+            if (source.status_code == StatusCode::FORBIDDEN
+                && source.message.to_lowercase().contains("rate limit"))
+                || source.status_code == StatusCode::TOO_MANY_REQUESTS =>
         {
             eprintln!("GitHub API rate limit exceeded");
         }
 
         // IDK what happened
         e => {
-            eprintln!("Unexpected error: {:#?}", e);
+            eprintln!("Unexpected error: {e:#?}");
         }
     }
+
     std::process::exit(1);
 }
