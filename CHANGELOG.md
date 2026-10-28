@@ -8,6 +8,7 @@ All notable changes to this project are documented here.
 
 - `--no-avatar` and `--no-color` flags.
 - Added `issues`.
+- Added check for `gh auth credential` and `GITHUB_TOKEN` to authenticate github requests.
 
 ### Changed
 

@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let username = &cli.username;
 
-    let (octocrab, has_token) = get_octocrab()?;
+    let (octocrab, token_source) = get_octocrab()?;
 
     // ID of the image from the process id given by the os
     let image_id = std::process::id();
@@ -59,7 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let image = Image::from_config(&config);
 
     let (user_result, stars_result, issues_result) = tokio::join!(
-        get_user_info(username, &octocrab, has_token),
+        get_user_info(username, &octocrab, token_source),
         get_total_stars(&octocrab, username),
         get_total_issues(&octocrab, username)
     );

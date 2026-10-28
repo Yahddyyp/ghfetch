@@ -21,21 +21,19 @@ pub struct UserInfo {
 pub async fn get_user_info(
     username: &str,
     octocrab: &Octocrab,
-    token: bool,
+    token_source: Option<&'static str>,
 ) -> Result<UserProfile, Box<dyn std::error::Error>> {
     // Check if PAT actually works
-    if token {
+    if let Some(source) = token_source {
         match octocrab.current().user().await {
             Err(octocrab::Error::GitHub { .. }) => {
-                eprintln!("GHFETCH_TOKEN is not valid");
+                eprintln!("{source} is not valid");
                 std::process::exit(1);
             }
-
             Err(e) => {
-                eprintln!("Error validating token: {e:#?}");
+                eprintln!("Error validating token from {source}: {e:#?}");
                 std::process::exit(1);
             }
-
             Ok(_) => (),
         }
     }

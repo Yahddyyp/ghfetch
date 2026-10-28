@@ -3,15 +3,17 @@ use octocrab::Octocrab;
 use std::{env, process::Command};
 
 /// Get token for authorized requests:
-/// GITHUB_TOKEN -> gh auth token -> GHFETCH_TOKEN -> Unauthorized requests
-pub fn get_octocrab() -> Result<(Octocrab, bool)> {
-    let token = env::var("GITHUB_TOKEN")
-        .ok()
-        .and_then(clean_token)
-        .or_else(get_gh_token)
-        .or_else(|| env::var("GHFETCH_TOKEN").ok().and_then(clean_token));
-
-    let has_token = token.is_some();
+/// GHFETCH_TOKEN -> gh auth token -> GITHUB_TOKEN -> Unauthorized requests
+pub fn get_octocrab() -> Result<(Octocrab, Option<&'static str>)> {
+    let (token, source) = if let Some(t) = env::var("GHFETCH_TOKEN").ok().and_then(clean_token) {
+        (Some(t), Some("GHFETCH_TOKEN"))
+    } else if let Some(t) = get_gh_token() {
+        (Some(t), Some("gh auth token"))
+    } else if let Some(t) = env::var("GITHUB_TOKEN").ok().and_then(clean_token) {
+        (Some(t), Some("GITHUB_TOKEN"))
+    } else {
+        (None, None)
+    };
 
     let builder = Octocrab::builder();
 
@@ -20,7 +22,7 @@ pub fn get_octocrab() -> Result<(Octocrab, bool)> {
         None => builder.build()?,
     };
 
-    Ok((client, has_token))
+    Ok((client, source))
 }
 
 /// Return a non-empty, trimmed token.

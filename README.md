@@ -53,8 +53,7 @@ You can provide a GitHub **Personal Access Token** through:
 export GHFETCH_TOKEN="your_token"
 ```
 
-You do not need to give the personal access token any sort of permissions.
-`ghfetch` will use the token for authenticated GitHub API requests.
+Even if you don't have the `GHFETCH_TOKEN` set, it will check for `gh auth token` and `GITHUB_TOKEN` as well to authenticate requests.
 
 ### Configuration
 
