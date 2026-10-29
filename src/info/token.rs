@@ -23,8 +23,10 @@ pub async fn validate_token(octocrab: &Octocrab, token_source: Option<&str>) {
 
 /// Get token for authorized requests:
 /// GHFETCH_TOKEN -> gh auth token -> GITHUB_TOKEN -> Unauthorized requests
-pub fn get_octocrab() -> Result<(Octocrab, Option<&'static str>)> {
-    let (token, source) = if let Some(t) = env::var("GHFETCH_TOKEN").ok().and_then(clean_token) {
+pub fn get_octocrab(access_token: Option<String>) -> Result<(Octocrab, Option<&'static str>)> {
+    let (token, source) = if let Some(t) = access_token.and_then(clean_token) {
+        (Some(t), Some("access-token"))
+    } else if let Some(t) = env::var("GHFETCH_TOKEN").ok().and_then(clean_token) {
         (Some(t), Some("GHFETCH_TOKEN"))
     } else if let Some(t) = get_gh_token() {
         (Some(t), Some("gh auth token"))

@@ -1,4 +1,4 @@
-use crate::config_stuff::Image;
+use crate::config_stuff::image::Image;
 use anyhow::{Context, Result};
 use base64::Engine;
 use std::io::{self, Write};
@@ -11,9 +11,9 @@ const KITTY_CHUNK_SIZE: usize = 4096;
 pub async fn get_image(url: &str, image_id: u32, layout: &Image) -> Result<()> {
     let response = reqwest::get(url)
         .await
-        .with_context(|| "failed to download github avatar")?
+        .with_context(|| "Failed to download github avatar")?
         .error_for_status()
-        .with_context(|| "github avatar request returned an error")?;
+        .with_context(|| "GitHub avatar request returned an error")?;
 
     let bytes = response.bytes().await?;
 

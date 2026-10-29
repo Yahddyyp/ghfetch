@@ -1,7 +1,7 @@
-use octocrab::models::UserProfile;
+use crate::info::user_info::UserInfo;
 
-use crate::info::UserInfo;
 use anyhow::Result;
+use octocrab::models::UserProfile;
 
 /// Build all the user info info a single struct.
 pub fn build_user_info(user: UserProfile, total_stars: u32, total_issues: u32) -> Result<UserInfo> {

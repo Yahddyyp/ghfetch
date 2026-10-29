@@ -1,7 +1,8 @@
-use crate::{
-    config_stuff::{Colors, Field, Image, UnderlineField, UnderlineTarget},
-    info::user_info::UserInfo,
-};
+use crate::Colors;
+use crate::Image;
+use crate::config_stuff::fields::{Field, UnderlineField, UnderlineTarget};
+use crate::info::user_info::UserInfo;
+
 use owo_colors::OwoColorize;
 
 /// Check if the fields need to be colorized.
@@ -131,8 +132,6 @@ pub fn print_user_info(
 
     if show_avatar {
         print!("\x1b[{}A\r", layout.image_rows.saturating_sub(1));
-    } else {
-        println!();
     }
 
     let text_line_count = lines.len();

@@ -1,8 +1,13 @@
-use crate::config_stuff::{Colors, Image, load_config};
-use crate::info::{
-    build_user_info, get_image, get_octocrab, get_total_issues, get_total_stars, get_user_info,
-    print_user_info, validate_token,
-};
+use crate::config_stuff::colors::Colors;
+use crate::config_stuff::config::load_config;
+use crate::config_stuff::image::Image;
+use crate::info::build_info::build_user_info;
+use crate::info::display_info::print_user_info;
+use crate::info::token::{get_octocrab, validate_token};
+use crate::info::total_issues::get_total_issues;
+use crate::info::total_stars::get_total_stars;
+use crate::info::user_info::get_user_info;
+use info::get_avatar_image::get_image;
 
 use anyhow::Result;
 use clap::Parser;
@@ -13,12 +18,12 @@ mod info;
 #[derive(Parser, Debug)]
 #[command(
     name = "ghfetch",
-    about = "A way to beautifully display your github stats.",
+    about = "A way to beautifully display your GitHub stats.",
     author = "Yahddyyp"
 )]
 #[command(version)]
 pub struct Cli {
-    /// Github username or an organisation's name to fetch
+    /// GitHub username or an organisation's name to fetch
     pub username: String,
 
     /// Do not display the profile avatar
@@ -28,10 +33,14 @@ pub struct Cli {
     /// Disable the colored output
     #[arg(long)]
     pub no_color: bool,
+
+    #[arg(long)]
+    /// Token to make the authorized GitHub API requests
+    pub access_token: Option<String>,
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     if cli.no_color {
@@ -40,7 +49,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let username = &cli.username;
 
-    let (octocrab, token_source) = get_octocrab()?;
+    let (octocrab, token_source) = get_octocrab(cli.access_token)?;
     validate_token(&octocrab, token_source).await;
 
     // ID of the image from the process id given by the os

@@ -1,6 +1,6 @@
 # Ghfetch
 
-Ghfetch is a neofetch/fastfetch like tool for fetching github stats from different profiles and displaying it in a beautiful way.
+Ghfetch is a neofetch/fastfetch like tool for fetching GitHub stats from different profiles and displaying it in a beautiful way.
 
 ![Preview Image](assets/preview.png)
 

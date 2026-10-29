@@ -6,7 +6,7 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- `--no-avatar` and `--no-color` flags.
+- `--no-avatar`, `--no-color` and `--access-token` flags.
 - Added `issues`.
 - Added check for `gh auth credential` and `GITHUB_TOKEN` to authenticate github requests.
 
@@ -15,11 +15,12 @@ All notable changes to this project are documented here.
 - Switched from a match to using clap for cli management.
 - Changed `total_stars` to just `stars`.
 - Made toml error have only one blank line instead of two.
+- Remove the duplicate token retrival in `main.rs`.
+- Made there be no blank lines at the top when you pass `--no-avatar` flag.
 
 ### Fixed
 
 - Two blank lines being made instead of one on some profiles.
-- Remove the duplicate token retrival in `main.rs`.
 
 ## [1.0.1] - 2026-09-22
 
