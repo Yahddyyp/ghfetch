@@ -73,6 +73,14 @@ pub fn print_user_info(
                 info.created_at
             )),
 
+            Field::Language => info.language.as_ref().map(|language| {
+                format!(
+                    "{} {}",
+                    format_text("Language", colors.language, colors.enabled),
+                    language
+                )
+            }),
+
             Field::Company => info.company.as_ref().map(|c| {
                 format!(
                     "{} {}",
@@ -170,6 +178,11 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
         UnderlineField::Issues => format!("{:<12} {}", "Issues", info.issues).len(),
 
         UnderlineField::Joined => format!("{:<12} {}", "Joined", info.created_at).len(),
+
+        UnderlineField::Language => match &info.language {
+            Some(language) => format!("{:<12} {}", "Language", language).len(),
+            None => 0,
+        },
 
         UnderlineField::Company => match &info.company {
             Some(company) => format!("{:<12} {}", "Company", company).len(),

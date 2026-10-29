@@ -16,6 +16,7 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
   "repos",
   "issues",
   "joined",
+  "language",
   "company",
   "location",
   "twitter",
@@ -34,6 +35,7 @@ followers = { r = 250, g = 179, b = 135 }
 repos = { r = 116, g = 199, b = 236 }
 issues = {r = 249, g = 226, b = 175}
 joined = { r = 137, g = 220, b = 235 }
+language = { r = 203, g = 166, b = 247 }
 company = { r = 250, g = 179, b = 135 }
 location = { r = 137, g = 220, b = 235 }
 twitter = { r = 203, g = 166, b = 247 }

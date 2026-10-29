@@ -6,6 +6,7 @@ pub struct UserInfo {
     pub followers: i32,
     pub avatar_url: String,
     pub created_at: String,
+    pub language: Option<String>,
     pub public_repos: u64,
     pub issues: u32,
     pub twitter_user: Option<String>,

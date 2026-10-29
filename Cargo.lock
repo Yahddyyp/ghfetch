@@ -950,6 +950,7 @@ dependencies = [
  "base64",
  "clap",
  "dirs",
+ "futures-util",
  "image",
  "octocrab",
  "owo-colors",
