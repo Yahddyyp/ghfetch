@@ -49,10 +49,22 @@ pub fn print_user_info(
                 info.stars
             )),
 
+            Field::Prs => Some(format!(
+                "{} {}",
+                format_text("Prs", colors.prs, colors.enabled),
+                info.prs
+            )),
+
             Field::Followers => Some(format!(
                 "{} {}",
                 format_text("Followers", colors.followers, colors.enabled),
                 info.followers
+            )),
+
+            Field::Following => Some(format!(
+                "{} {}",
+                format_text("Following", colors.following, colors.enabled),
+                info.following
             )),
 
             Field::Repos => Some(format!(
@@ -171,7 +183,11 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
 
         UnderlineField::Stars => format!("{:<12} {}", "Stars", info.stars).len(),
 
+        UnderlineField::Prs => format!("{:<12} {}", "Prs", info.prs).len(),
+
         UnderlineField::Followers => format!("{:<12} {}", "Followers", info.followers).len(),
+
+        UnderlineField::Following => format!("{:<12} {}", "Following", info.following).len(),
 
         UnderlineField::Repos => format!("{:<12} {}", "Repos", info.public_repos).len(),
 

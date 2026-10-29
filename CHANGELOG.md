@@ -7,7 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - `--no-avatar`, `--no-color` and `--access-token` flags.
-- Added `issues` and `language`.
+- Added `issues`, `language`, `following` and `prs` in fields.
 - Added check for `gh auth credential` and `GITHUB_TOKEN` to authenticate github requests.
 
 ### Changed

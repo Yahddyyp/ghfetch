@@ -11,8 +11,10 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
   "user",
   { underline = "user" },
   "id",
-  "total_stars",
+  "stars",
+  "prs",
   "followers",
+  "following",
   "repos",
   "issues",
   "joined",
@@ -31,7 +33,9 @@ name = { r = 203, g = 166, b = 247 }
 # underline = { r = 255, g = 255, b = 255 }
 id = { r = 137, g = 220, b = 235 }
 stars = { r = 166, g = 227, b = 161 }
+prs = { r = 137, g = 220, b = 235 }
 followers = { r = 250, g = 179, b = 135 }
+following = { r = 180, g = 190, b = 254 }
 repos = { r = 116, g = 199, b = 236 }
 issues = {r = 249, g = 226, b = 175}
 joined = { r = 137, g = 220, b = 235 }

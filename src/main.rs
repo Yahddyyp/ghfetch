@@ -4,6 +4,7 @@ use crate::config_stuff::image::Image;
 use crate::info::build_info::build_user_info;
 use crate::info::display_info::print_user_info;
 use crate::info::stats::most_used_languages::get_most_used_language;
+use crate::info::stats::prs::get_total_prs;
 use crate::info::stats::total_issues::get_total_issues;
 use crate::info::stats::total_stars::get_total_stars;
 use crate::info::token::{get_octocrab, validate_token};
@@ -69,14 +70,15 @@ async fn main() -> Result<()> {
 
     let image = Image::from_config(&config);
 
-    let (user, stars, issues, language) = tokio::join!(
+    let (user, stars, issues, language, prs) = tokio::join!(
         get_user_info(username, &octocrab),
         get_total_stars(&octocrab, username),
         get_total_issues(&octocrab, username),
-        get_most_used_language(&octocrab, username)
+        get_most_used_language(&octocrab, username),
+        get_total_prs(&octocrab, username)
     );
 
-    let user_info = build_user_info(user, stars, issues, language)?;
+    let user_info = build_user_info(user, stars, issues, language, prs)?;
 
     if !cli.no_avatar {
         get_image(&user_info.avatar_url, image_id, &image).await?;

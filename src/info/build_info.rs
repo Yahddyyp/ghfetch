@@ -9,16 +9,19 @@ pub fn build_user_info(
     total_stars: u32,
     total_issues: u32,
     most_used_languages: Result<Option<String>>,
+    total_prs: u32,
 ) -> Result<UserInfo> {
     Ok(UserInfo {
         name: user.login,
-        id: user.id.0.try_into()?,
+        id: user.id,
         stars: total_stars,
-        followers: user.followers.try_into()?,
+        followers: user.followers,
+        following: user.following,
         public_repos: user.public_repos,
         issues: total_issues,
         created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
         language: most_used_languages?,
+        prs: total_prs,
 
         company: user
             .company

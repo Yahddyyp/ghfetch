@@ -68,12 +68,16 @@ You can customize which fields are displayed in what order:
 ```toml
 fields = [
   "user",
-  { underline = "user" }, # can take any sort of field or integer value
+  { underline = "user" }, # can take a field or a numerical value
   "id",
   "stars",
+  "prs",
   "followers",
+  "following",
   "repos",
+  "issues",
   "joined",
+  "language",
   "company",
   "location",
   "twitter",
@@ -91,13 +95,18 @@ name = { r = 203, g = 166, b = 247 }
 # underline = { r = 255, g = 255, b = 255 }
 id = { r = 137, g = 220, b = 235 }
 stars = { r = 166, g = 227, b = 161 }
+prs = { r = 137, g = 220, b = 235 }
 followers = { r = 250, g = 179, b = 135 }
+following = { r = 180, g = 190, b = 254 }
 repos = { r = 116, g = 199, b = 236 }
+issues = {r = 249, g = 226, b = 175}
 joined = { r = 137, g = 220, b = 235 }
+language = { r = 203, g = 166, b = 247 }
 company = { r = 250, g = 179, b = 135 }
 location = { r = 137, g = 220, b = 235 }
 twitter = { r = 203, g = 166, b = 247 }
 blog = { r = 203, g = 166, b = 247 }
+
 ```
 
 And customise how the image appears:

@@ -4,6 +4,7 @@ use anyhow::Result;
 use futures_util::stream::{self, StreamExt, TryStreamExt};
 use octocrab::Octocrab;
 
+/// Get the most used language by the user.
 pub async fn get_most_used_language(octocrab: &Octocrab, username: &str) -> Result<Option<String>> {
     let mut languages: HashMap<String, u64> = HashMap::new();
 
