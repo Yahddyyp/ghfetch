@@ -17,6 +17,7 @@ All notable changes to this project are documented here.
 - Made toml error have only one blank line instead of two.
 - Remove the duplicate token retrival in `main.rs`.
 - Made there be no blank lines at the top when you pass `--no-avatar` flag.
+- Made `Joined` just show date instead of showing date and time.
 
 ### Fixed
 

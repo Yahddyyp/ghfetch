@@ -19,7 +19,7 @@ pub fn build_user_info(
         following: user.following,
         public_repos: user.public_repos,
         issues: total_issues,
-        created_at: user.created_at.format("%d-%m-%Y at %I:%M %p").to_string(),
+        created_at: user.created_at.format("%Y-%m-%d").to_string(),
         language: most_used_languages?,
         prs: total_prs,
 
