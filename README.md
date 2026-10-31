@@ -68,7 +68,7 @@ You can customize which fields are displayed in what order:
 ```toml
 fields = [
   "user",
-  { underline = "user" }, # can take a field or a numerical value
+  { underline = "user" }, # Can take a field or a numeric value
   "id",
   "stars",
   "prs",
@@ -82,14 +82,17 @@ fields = [
   "location",
   "twitter",
   "blog",
-  "break",
+  { break_if = "bio" },
   "bio",
+  "break",
+  { text = "Built with \u001b[38;2;255;127;42mRust\u001b[0m 🦀" } # Supports ANSI escape sequences. Use TOML's \u001b escape sequences.
 ]
 ```
 
 Colors can be by customized:
 
 ```toml
+[colors]
 name = { r = 203, g = 166, b = 247 }
 # Uses the terminal's default foreground color if omitted
 # underline = { r = 255, g = 255, b = 255 }
@@ -106,7 +109,6 @@ company = { r = 250, g = 179, b = 135 }
 location = { r = 137, g = 220, b = 235 }
 twitter = { r = 203, g = 166, b = 247 }
 blog = { r = 203, g = 166, b = 247 }
-
 ```
 
 And customise how the image appears:

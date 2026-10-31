@@ -125,17 +125,17 @@ pub fn print_user_info(
                 )
             }),
 
-            Field::Break => info
-                .bio
-                .as_deref()
-                .filter(|bio| !bio.trim().is_empty())
-                .map(|_| String::new()),
+            Field::Break => Some(String::new()),
+
+            Field::BreakIf(field) => field_has_value(field, info).then(String::new),
 
             Field::Bio => info
                 .bio
                 .as_deref()
                 .filter(|bio| !bio.trim().is_empty())
                 .map(str::to_owned),
+
+            Field::Text(text) => Some(text.to_string()),
         };
 
         if let Some(line) = line {
@@ -175,7 +175,7 @@ pub fn print_user_info(
 }
 
 /// Give the field width for underline.
-fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
+fn field_width(field: &UnderlineField, info: &UserInfo) -> usize {
     match field {
         UnderlineField::User => info.name.len(),
 
@@ -221,13 +221,15 @@ fn field_width(field: UnderlineField, info: &UserInfo) -> usize {
         },
 
         UnderlineField::Bio => info.bio.as_deref().unwrap_or("").len(),
+
+        UnderlineField::Text(text) => text.len(),
     }
 }
 
 /// The actual underline.
 fn underline(target: &UnderlineTarget, info: &UserInfo, colors: &Colors) -> String {
     let width = match target {
-        UnderlineTarget::Field(field) => field_width(*field, info),
+        UnderlineTarget::Field(field) => field_width(field, info),
         UnderlineTarget::Width(width) => *width,
     };
 
@@ -236,5 +238,33 @@ fn underline(target: &UnderlineTarget, info: &UserInfo, colors: &Colors) -> Stri
     match (colors.enabled, colors.underline) {
         (true, Some((r, g, b))) => underline.truecolor(r, g, b).to_string(),
         _ => underline,
+    }
+}
+
+/// Check if value will always be printed or not.
+fn field_has_value(field: &UnderlineField, info: &UserInfo) -> bool {
+    match field {
+        UnderlineField::User
+        | UnderlineField::Id
+        | UnderlineField::Stars
+        | UnderlineField::Prs
+        | UnderlineField::Followers
+        | UnderlineField::Following
+        | UnderlineField::Repos
+        | UnderlineField::Issues
+        | UnderlineField::Joined => true,
+
+        UnderlineField::Language => info.language.is_some(),
+        UnderlineField::Company => info.company.is_some(),
+        UnderlineField::Location => info.location.is_some(),
+        UnderlineField::Twitter => info.twitter_user.is_some(),
+        UnderlineField::Blog => info.blog.is_some(),
+
+        UnderlineField::Bio => info
+            .bio
+            .as_deref()
+            .is_some_and(|bio| !bio.trim().is_empty()),
+
+        UnderlineField::Text(text) => !text.trim().is_empty(),
     }
 }

@@ -9,7 +9,7 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
 
     let default_contents = r#"fields = [
   "user",
-  { underline = "user" },
+  { underline = "user" }, # Can take a field or a numeric value
   "id",
   "stars",
   "prs",
@@ -23,8 +23,10 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
   "location",
   "twitter",
   "blog",
-  "break",
+  { break_if = "bio" },
   "bio",
+  "break",
+  { text = "Built with \u001b[38;2;255;127;42mRust\u001b[0m 🦀" } # Supports ANSI escape sequences. Use TOML's \u001b escape sequences.
 ]
 
 [colors]

@@ -20,12 +20,13 @@ impl Config {
                 Field::Twitter,
                 Field::Blog,
                 Field::Bio,
+                Field::Text("".to_string()),
             ]
         })
     }
 }
 
-#[derive(Deserialize, Clone, Copy)]
+#[derive(Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum UnderlineField {
     User,
@@ -43,6 +44,7 @@ pub enum UnderlineField {
     Twitter,
     Blog,
     Bio,
+    Text(String),
 }
 
 #[derive(Deserialize, Clone)]
@@ -72,4 +74,6 @@ pub enum Field {
     Blog,
     Bio,
     Break,
+    BreakIf(UnderlineField),
+    Text(String),
 }
