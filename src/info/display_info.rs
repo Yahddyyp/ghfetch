@@ -1,6 +1,7 @@
 use crate::Colors;
 use crate::Image;
 use crate::config_stuff::fields::{Field, UnderlineField, UnderlineTarget};
+use crate::info::text_placeholders::render_template;
 use crate::info::user_info::UserInfo;
 
 use owo_colors::OwoColorize;
@@ -33,7 +34,7 @@ pub fn print_user_info(
 
     for field in fields {
         let line = match field {
-            Field::User => Some(colorize(&info.name, colors.name, colors.enabled)),
+            Field::User => Some(colorize(&info.user, colors.user, colors.enabled)),
 
             Field::Underline(target) => Some(underline(target, info, colors)),
 
@@ -135,7 +136,7 @@ pub fn print_user_info(
                 .filter(|bio| !bio.trim().is_empty())
                 .map(str::to_owned),
 
-            Field::Text(text) => Some(text.to_string()),
+            Field::Text(text) => Some(render_template(text, info)),
         };
 
         if let Some(line) = line {
@@ -177,7 +178,7 @@ pub fn print_user_info(
 /// Give the field width for underline.
 fn field_width(field: &UnderlineField, info: &UserInfo) -> usize {
     match field {
-        UnderlineField::User => info.name.len(),
+        UnderlineField::User => info.user.len(),
 
         UnderlineField::Id => format!("{:<12} {}", "ID", info.id).len(),
 

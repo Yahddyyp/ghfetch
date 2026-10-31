@@ -5,3 +5,5 @@ pub mod get_avatar_image;
 pub mod stats;
 pub mod token;
 pub mod user_info;
+
+mod text_placeholders;
