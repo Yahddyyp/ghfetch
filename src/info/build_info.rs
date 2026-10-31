@@ -12,7 +12,7 @@ pub fn build_user_info(
     total_prs: u32,
 ) -> Result<UserInfo> {
     Ok(UserInfo {
-        name: user.login,
+        user: user.login,
         id: user.id,
         stars: total_stars,
         followers: user.followers,

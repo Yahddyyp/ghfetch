@@ -26,11 +26,12 @@ pub fn write_default_config(path: &std::path::Path) -> Result<()> {
   { break_if = "bio" },
   "bio",
   "break",
-  { text = "Built with \u001b[38;2;255;127;42mRust\u001b[0m 🦀" } # Supports ANSI escape sequences. Use TOML's \u001b escape sequences.
+  # Supports ANSI escape sequences (use TOML's \u001b escape sequences) and field substituions like {user}
+  { text = "Built with \u001b[38;2;255;127;42mRust\u001b[0m 🦀" } 
 ]
 
 [colors]
-name = { r = 203, g = 166, b = 247 }
+user = { r = 203, g = 166, b = 247 }
 # Uses the terminal's default foreground color if omitted
 # underline = { r = 255, g = 255, b = 255 }
 id = { r = 137, g = 220, b = 235 }

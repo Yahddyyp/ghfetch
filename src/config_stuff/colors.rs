@@ -16,7 +16,7 @@ impl Color {
 
 #[derive(Deserialize, Default)]
 pub struct ColorsConfig {
-    pub name: Option<Color>,
+    pub user: Option<Color>,
     pub underline: Option<Color>,
     pub id: Option<Color>,
     pub stars: Option<Color>,
@@ -37,7 +37,7 @@ pub struct Colors {
     // If colors are actually need to be displayed
     pub enabled: bool,
 
-    pub name: (u8, u8, u8),
+    pub user: (u8, u8, u8),
     pub underline: Option<(u8, u8, u8)>,
     pub id: (u8, u8, u8),
     pub stars: (u8, u8, u8),
@@ -61,7 +61,7 @@ impl Colors {
         Colors {
             enabled: true,
 
-            name: c.name.map(Color::to_rgb).unwrap_or((203, 166, 247)),
+            user: c.user.map(Color::to_rgb).unwrap_or((203, 166, 247)),
             underline: c.underline.map(Color::to_rgb),
             id: c.id.map(Color::to_rgb).unwrap_or((137, 220, 235)),
             stars: c.stars.map(Color::to_rgb).unwrap_or((166, 227, 161)),

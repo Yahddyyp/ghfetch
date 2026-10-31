@@ -5,7 +5,7 @@ use octocrab::{
 };
 
 pub struct UserInfo {
-    pub name: String,
+    pub user: String,
     pub followers: u64,
     pub avatar_url: String,
     pub created_at: String,
