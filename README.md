@@ -16,6 +16,25 @@ Ghfetch is a neofetch/fastfetch like tool for fetching GitHub stats from differe
 brew install Yahddyyp/tap/ghfetch
 ```
 
+#### Nix flake
+
+Add `ghfetch` to your flake inputs:
+
+```nix
+ghfetch = {
+  url = "github:Yahddyyp/ghfetch";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+Then add the package to your system packages:
+
+```nix
+environment.systemPackages = [
+  ghfetch.packages.${pkgs.system}.default
+];
+```
+
 #### Cargo
 ```bash
 cargo install ghfetch-cli
