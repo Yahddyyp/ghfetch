@@ -3,12 +3,8 @@ use crate::config_stuff::config::load_config;
 use crate::config_stuff::image::Image;
 use crate::info::build_info::build_user_info;
 use crate::info::display_info::print_user_info;
-use crate::info::stats::most_used_languages::get_most_used_language;
-use crate::info::stats::prs::get_total_prs;
-use crate::info::stats::total_issues::get_total_issues;
-use crate::info::stats::total_stars::get_total_stars;
+use crate::info::fetch_info::fetch_user_data;
 use crate::info::token::{get_octocrab, validate_token};
-use crate::info::user_info::get_user_info;
 use info::get_avatar_image::get_image;
 
 use anyhow::Result;
@@ -70,13 +66,7 @@ async fn main() -> Result<()> {
 
     let image = Image::from_config(&config);
 
-    let (user, stars, issues, language, prs) = tokio::join!(
-        get_user_info(username, &octocrab),
-        get_total_stars(&octocrab, username),
-        get_total_issues(&octocrab, username),
-        get_most_used_language(&octocrab, username),
-        get_total_prs(&octocrab, username)
-    );
+    let (user, stars, issues, language, prs) = fetch_user_data(username, &octocrab, &fields).await;
 
     let user_info = build_user_info(user, stars, issues, language, prs)?;
 

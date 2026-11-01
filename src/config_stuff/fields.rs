@@ -77,3 +77,18 @@ pub enum Field {
     BreakIf(UnderlineField),
     Text(String),
 }
+
+/// Check what functions need to run based on what fields the
+/// config file has.
+pub fn needs_field(fields: &[Field], target: &str) -> bool {
+    fields.iter().any(|field| match field {
+        Field::Stars => target == "stars",
+        Field::Issues => target == "issues",
+        Field::Prs => target == "prs",
+        Field::Language => target == "language",
+
+        Field::Text(text) => text.contains(&format!("{{{target}}}")),
+
+        _ => false,
+    })
+}

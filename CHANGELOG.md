@@ -20,6 +20,7 @@ All notable changes to this project are documented here.
 - Made there be no blank lines at the top when you pass `--no-avatar` flag.
 - Made `Joined` just show date instead of showing date and time.
 - Made `name` for colors be `user`.
+- Made cli not calculate the field if its not in the config file.
 
 ### Fixed
 

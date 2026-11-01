@@ -23,7 +23,7 @@ pub struct UserInfo {
     pub prs: u32,
 }
 
-/// Fetch the user profile
+/// Fetch the user profile.
 pub async fn get_user_info(username: &str, octocrab: &Octocrab) -> UserProfile {
     octocrab
         .users(username)
