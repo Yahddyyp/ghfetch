@@ -16,7 +16,12 @@ Ghfetch is a neofetch/fastfetch like tool for fetching GitHub stats from differe
 brew install Yahddyyp/tap/ghfetch
 ```
 
-#### From source
+#### Cargo
+```bash
+cargo install ghfetch-cli
+```
+
+#### Building from source
 
 ```bash
 git clone https://github.com/Yahddyyp/ghfetch.git
