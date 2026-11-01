@@ -53,7 +53,13 @@ You can provide a GitHub **Personal Access Token** through:
 export GHFETCH_TOKEN="your_token"
 ```
 
-Even if you don't have the `GHFETCH_TOKEN` set, it will check for `gh auth token` and `GITHUB_TOKEN` as well to authenticate requests.
+Or
+
+```bash
+ghfetch <USERNAME> --access-token <TOKEN>
+```
+
+Even if you don't set or use a token, the cli will check for `gh auth token` and `GITHUB_TOKEN` as well to authenticate requests.
 
 ### Configuration
 
